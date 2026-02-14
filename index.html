@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fatkullin</title>
+    <title>Fatkullin - вход</title>
     <style>
         * {
             margin: 0;
@@ -13,12 +13,12 @@
         }
         
         body {
-            background: #0a1a2a;
+            background: #0f172a;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 10px;
+            padding: 20px;
         }
         
         .app {
@@ -26,26 +26,19 @@
             max-width: 400px;
             background: white;
             border-radius: 30px;
-            overflow: hidden;
-        }
-        
-        .header {
-            background: #1e2f4a;
-            color: white;
             padding: 30px 20px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
         }
         
-        .content {
-            padding: 20px;
+        h1 {
+            color: #1e2f4a;
+            margin-bottom: 30px;
+            text-align: center;
         }
         
         input {
             width: 100%;
             padding: 15px;
-            margin: 10px 0;
+            margin: 8px 0;
             border: 2px solid #ddd;
             border-radius: 25px;
             font-size: 16px;
@@ -54,7 +47,7 @@
         button {
             width: 100%;
             padding: 15px;
-            margin: 5px 0;
+            margin: 8px 0;
             border: none;
             border-radius: 25px;
             background: #fbbf24;
@@ -64,105 +57,91 @@
             cursor: pointer;
         }
         
+        .error {
+            color: red;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .success {
+            color: green;
+            text-align: center;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
         .hidden {
             display: none;
         }
         
-        .contact {
-            background: #f5f5f5;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .online {
-            color: green;
-            font-size: 14px;
-        }
-        
-        .offline {
-            color: gray;
-            font-size: 14px;
-        }
-        
-        video {
-            width: 100%;
-            background: black;
-            border-radius: 15px;
-            margin: 5px 0;
+        .clear-btn {
+            background: #dc2626;
+            color: white;
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
     <div class="app">
-        <div class="header">Fatkullin</div>
-        <div class="content">
-            <!-- Экран 1: Регистрация/вход -->
-            <div id="screen1">
-                <input type="text" id="name" placeholder="Имя">
-                <input type="tel" id="phone" placeholder="Телефон">
-                <input type="password" id="password" placeholder="Пароль">
-                <button onclick="register()">Зарегистрироваться</button>
-                <button onclick="login()">Войти</button>
-                <div id="message" style="color: red; text-align: center;"></div>
-            </div>
-            
-            <!-- Экран 2: Контакты -->
-            <div id="screen2" class="hidden">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
-                    <div>
-                        <h3 id="myName"></h3>
-                        <p id="myPhone"></p>
-                    </div>
-                    <button onclick="logout()" style="width: auto; padding: 10px;">Выйти</button>
-                </div>
-                
-                <input type="tel" id="addPhone" placeholder="Телефон для добавления">
-                <button onclick="addContact()">Добавить контакт</button>
-                
-                <div id="contactsList"></div>
-            </div>
-            
-            <!-- Экран 3: Звонок -->
-            <div id="screen3" class="hidden">
-                <video id="remoteVideo" autoplay></video>
-                <video id="localVideo" autoplay muted></video>
-                <button onclick="endCall()" style="background: red; color: white;">Завершить</button>
-            </div>
+        <h1>Fatkullin</h1>
+        
+        <!-- Форма регистрации -->
+        <div id="registerBlock">
+            <h3>Регистрация</h3>
+            <input type="text" id="regName" placeholder="Имя" value="Иван">
+            <input type="tel" id="regPhone" placeholder="Телефон" value="+79991234567">
+            <input type="password" id="regPassword" placeholder="Пароль" value="123">
+            <button onclick="register()">Зарегистрироваться</button>
         </div>
+        
+        <!-- Форма входа -->
+        <div id="loginBlock">
+            <h3>Вход</h3>
+            <input type="tel" id="loginPhone" placeholder="Телефон" value="+79991234567">
+            <input type="password" id="loginPassword" placeholder="Пароль" value="123">
+            <button onclick="login()">Войти</button>
+        </div>
+        
+        <!-- Кнопка очистки (на случай ошибок) -->
+        <button class="clear-btn" onclick="clearAll()">Очистить всё и начать заново</button>
+        
+        <div id="message" class="error"></div>
     </div>
 
     <script>
-        // Хранилище
-        let users = JSON.parse(localStorage.getItem('users') || '[]');
-        let currentUser = JSON.parse(localStorage.getItem('currentUser') || 'null');
-        let contacts = JSON.parse(localStorage.getItem('contacts') || '[]');
-        let onlineUsers = new Set();
-        
-        // Проверяем, есть ли текущий пользователь
-        if (currentUser) {
-            showScreen2();
+        // Полная очистка
+        function clearAll() {
+            localStorage.clear();
+            document.getElementById('message').innerHTML = '✅ Всё очищено. Теперь можно регистрироваться заново.';
         }
-        
+
         // Регистрация
         function register() {
-            const name = document.getElementById('name').value;
-            const phone = document.getElementById('phone').value;
-            const password = document.getElementById('password').value;
+            const name = document.getElementById('regName').value;
+            const phone = document.getElementById('regPhone').value;
+            const password = document.getElementById('regPassword').value;
             
             if (!name || !phone || !password) {
-                document.getElementById('message').innerText = 'Заполните все поля';
+                document.getElementById('message').innerHTML = '❌ Заполните все поля';
                 return;
             }
             
-            if (users.find(u => u.phone === phone)) {
-                document.getElementById('message').innerText = 'Телефон уже есть';
+            // Получаем текущих пользователей
+            let users = [];
+            const stored = localStorage.getItem('users');
+            if (stored) {
+                users = JSON.parse(stored);
+            }
+            
+            // Проверяем есть ли такой телефон
+            const exists = users.find(u => u.phone === phone);
+            if (exists) {
+                document.getElementById('message').innerHTML = '❌ Этот телефон уже зарегистрирован. Нажмите "Очистить всё" или войдите.';
                 return;
             }
             
+            // Создаём нового пользователя
             const newUser = {
                 id: Date.now() + '',
                 name: name,
@@ -172,152 +151,40 @@
             
             users.push(newUser);
             localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('currentUser', JSON.stringify(newUser));
             
-            currentUser = newUser;
-            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            document.getElementById('message').innerHTML = '✅ Регистрация успешна! Перенаправление...';
             
-            showScreen2();
+            // Переходим на главную
+            setTimeout(() => {
+                window.location.href = 'main.html';
+            }, 1000);
         }
         
         // Вход
         function login() {
-            const phone = document.getElementById('phone').value;
-            const password = document.getElementById('password').value;
+            const phone = document.getElementById('loginPhone').value;
+            const password = document.getElementById('loginPassword').value;
             
+            const stored = localStorage.getItem('users');
+            if (!stored) {
+                document.getElementById('message').innerHTML = '❌ Нет зарегистрированных пользователей';
+                return;
+            }
+            
+            const users = JSON.parse(stored);
             const user = users.find(u => u.phone === phone && u.password === password);
             
             if (user) {
-                currentUser = user;
-                localStorage.setItem('currentUser', JSON.stringify(currentUser));
-                showScreen2();
-            } else {
-                document.getElementById('message').innerText = 'Неверный телефон или пароль';
-            }
-        }
-        
-        // Выход
-        function logout() {
-            currentUser = null;
-            localStorage.removeItem('currentUser');
-            showScreen1();
-        }
-        
-        // Добавить контакт
-        function addContact() {
-            const phone = document.getElementById('addPhone').value;
-            const user = users.find(u => u.phone === phone && u.id !== currentUser.id);
-            
-            if (user) {
-                if (!contacts.find(c => c.id === user.id)) {
-                    contacts.push({
-                        id: user.id,
-                        name: user.name,
-                        phone: user.phone
-                    });
-                    localStorage.setItem('contacts', JSON.stringify(contacts));
-                    renderContacts();
-                    document.getElementById('addPhone').value = '';
-                } else {
-                    alert('Контакт уже есть');
-                }
-            } else {
-                alert('Пользователь не найден');
-            }
-        }
-        
-        // Показать контакты
-        function renderContacts() {
-            const list = document.getElementById('contactsList');
-            
-            if (contacts.length === 0) {
-                list.innerHTML = '<p style="text-align: center; color: gray;">Нет контактов</p>';
-                return;
-            }
-            
-            list.innerHTML = '';
-            contacts.forEach(contact => {
-                const div = document.createElement('div');
-                div.className = 'contact';
-                div.innerHTML = `
-                    <div>
-                        <strong>${contact.name}</strong>
-                        <div class="${onlineUsers.has(contact.id) ? 'online' : 'offline'}">
-                            ${onlineUsers.has(contact.id) ? '● в сети' : '○ не в сети'}
-                        </div>
-                    </div>
-                    <button onclick="call('${contact.id}', '${contact.name}')">📹</button>
-                `;
-                list.appendChild(div);
-            });
-        }
-        
-        // Звонок
-        async function call(id, name) {
-            if (!onlineUsers.has(id)) {
-                alert('Пользователь не в сети');
-                return;
-            }
-            
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                document.getElementById('localVideo').srcObject = localStream;
-                showScreen3();
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                document.getElementById('message').innerHTML = '✅ Вход выполнен! Перенаправление...';
                 
-                // Для теста показываем своё видео и как удалённое
                 setTimeout(() => {
-                    document.getElementById('remoteVideo').srcObject = localStream;
+                    window.location.href = 'main.html';
                 }, 1000);
-                
-            } catch (e) {
-                alert('Ошибка камеры');
+            } else {
+                document.getElementById('message').innerHTML = '❌ Неверный телефон или пароль';
             }
-        }
-        
-        // Завершить звонок
-        function endCall() {
-            if (localStream) {
-                localStream.getTracks().forEach(t => t.stop());
-            }
-            showScreen2();
-        }
-        
-        // Переключение экранов
-        function showScreen1() {
-            document.getElementById('screen1').classList.remove('hidden');
-            document.getElementById('screen2').classList.add('hidden');
-            document.getElementById('screen3').classList.add('hidden');
-        }
-        
-        function showScreen2() {
-            document.getElementById('screen1').classList.add('hidden');
-            document.getElementById('screen2').classList.remove('hidden');
-            document.getElementById('screen3').classList.add('hidden');
-            
-            document.getElementById('myName').innerText = currentUser.name;
-            document.getElementById('myPhone').innerText = currentUser.phone;
-            
-            // Добавляем себя в онлайн
-            onlineUsers.add(currentUser.id);
-            
-            renderContacts();
-            
-            // Имитация онлайна других
-            setInterval(() => {
-                contacts.forEach(contact => {
-                    if (Math.random() > 0.5) {
-                        onlineUsers.add(contact.id);
-                    } else {
-                        onlineUsers.delete(contact.id);
-                    }
-                });
-                renderContacts();
-            }, 5000);
-        }
-        
-        function showScreen3() {
-            document.getElementById('screen1').classList.add('hidden');
-            document.getElementById('screen2').classList.add('hidden');
-            document.getElementById('screen3').classList.remove('hidden');
         }
     </script>
 </body>
