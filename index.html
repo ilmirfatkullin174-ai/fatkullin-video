@@ -3,152 +3,299 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест Fatkullin</title>
+    <title>Fatkullin Simple</title>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 20px;
-            background: #f0f0f0;
+            background: #1e2f4a;
+            color: white;
+            margin: 0;
         }
         .container {
             max-width: 400px;
             margin: 0 auto;
+        }
+        .card {
             background: white;
+            border-radius: 30px;
             padding: 20px;
-            border-radius: 20px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        button {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            font-size: 18px;
-            border-radius: 10px;
-            border: none;
-            background: #4CAF50;
-            color: white;
-            cursor: pointer;
-        }
-        .id-box {
-            background: #333;
-            color: #ff0;
-            padding: 15px;
-            font-size: 20px;
-            border-radius: 10px;
-            margin: 10px 0;
-            word-break: break-all;
+            margin: 20px 0;
+            color: black;
         }
         input {
             width: 100%;
             padding: 15px;
             font-size: 18px;
+            border: 2px solid #ccc;
+            border-radius: 25px;
             margin: 10px 0;
-            border: 2px solid #ddd;
-            border-radius: 10px;
             box-sizing: border-box;
         }
-        .log {
-            text-align: left;
-            background: #f5f5f5;
-            padding: 10px;
-            border-radius: 5px;
-            height: 150px;
-            overflow-y: auto;
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            border: none;
+            border-radius: 25px;
+            background: #fbbf24;
+            color: #1e2f4a;
+            font-weight: bold;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+        button.red {
+            background: #dc2626;
+            color: white;
+        }
+        video {
+            width: 100%;
+            background: black;
+            border-radius: 20px;
+            margin: 5px 0;
+        }
+        .hidden {
+            display: none;
+        }
+        .code {
+            background: #1e2f4a;
+            color: #fbbf24;
+            padding: 15px;
+            border-radius: 15px;
             font-size: 12px;
+            word-break: break-all;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📱 Fatkullin ТЕСТ</h1>
+        <h1>Fatkullin Video</h1>
         
-        <div>
-            <button onclick="generateId()">1. Создать мой ID</button>
-            <div class="id-box" id="myId">---</div>
+        <!-- Экран 1: Вход -->
+        <div id="screen1" class="card">
+            <h2>👋 Вход</h2>
+            <input type="text" id="userName" placeholder="Ваше имя" value="User">
+            <button onclick="enter()">Войти</button>
         </div>
         
-        <hr>
-        
-        <div>
-            <input type="text" id="targetId" placeholder="Введите ID собеседника">
-            <button onclick="sendMessage()">2. Отправить тестовое сообщение</button>
+        <!-- Экран 2: Ожидание -->
+        <div id="screen2" class="card hidden">
+            <h2>👤 <span id="displayName"></span></h2>
+            <p>Ваш код:</p>
+            <div class="code" id="myCode"></div>
+            <hr>
+            <h3>Позвонить</h3>
+            <input type="text" id="targetCode" placeholder="Введите код собеседника">
+            <button onclick="startCall()">📞 Позвонить</button>
+            <button class="red" onclick="logout()">Выйти</button>
         </div>
         
-        <hr>
-        
-        <div>
-            <h3>Лог сообщений:</h3>
-            <div class="log" id="log"></div>
-            <button onclick="checkMessages()">3. Проверить входящие</button>
+        <!-- Экран 3: Звонок -->
+        <div id="screen3" class="card hidden">
+            <video id="remoteVideo" autoplay></video>
+            <video id="localVideo" autoplay muted></video>
+            <button class="red" onclick="hangup()">Завершить</button>
         </div>
     </div>
 
     <script>
+        // Простые переменные
         let myId = '';
-        let messages = JSON.parse(localStorage.getItem('test_messages') || '{}');
+        let myName = '';
+        let localStream = null;
+        let peerConnection = null;
+        let remoteStream = null;
         
-        function log(text) {
-            const log = document.getElementById('log');
-            log.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + text + '</div>';
-            log.scrollTop = log.scrollHeight;
+        // STUN сервер
+        const config = {
+            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+        };
+        
+        // Хранилище сигналов
+        let signals = JSON.parse(localStorage.getItem('signals') || '{}');
+        
+        // Вход
+        function enter() {
+            myName = document.getElementById('userName').value || 'User';
+            myId = 'user_' + Date.now().toString().slice(-6);
+            
+            document.getElementById('displayName').innerText = myName;
+            document.getElementById('myCode').innerText = myId;
+            
+            showScreen2();
+            
+            // Проверяем входящие каждые 2 секунды
+            setInterval(checkSignals, 2000);
         }
         
-        function generateId() {
-            myId = 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
-            document.getElementById('myId').innerText = myId;
-            log('✅ Ваш ID создан: ' + myId);
+        // Выход
+        function logout() {
+            showScreen1();
         }
         
-        function sendMessage() {
-            const targetId = document.getElementById('targetId').value;
-            if (!targetId) {
-                alert('Введите ID собеседника');
-                return;
-            }
+        // Начать звонок
+        async function startCall() {
+            const targetId = document.getElementById('targetCode').value;
+            if (!targetId) return alert('Введите код');
             
-            if (!myId) {
-                alert('Сначала создайте свой ID');
-                return;
-            }
-            
-            // Сохраняем сообщение для целевого пользователя
-            if (!messages[targetId]) messages[targetId] = [];
-            messages[targetId].push({
-                from: myId,
-                text: 'Тест ' + Date.now(),
-                time: new Date().toLocaleTimeString()
-            });
-            
-            localStorage.setItem('test_messages', JSON.stringify(messages));
-            log('📤 Отправлено пользователю ' + targetId);
-        }
-        
-        function checkMessages() {
-            if (!myId) {
-                alert('Сначала создайте свой ID');
-                return;
-            }
-            
-            const myMessages = messages[myId] || [];
-            
-            if (myMessages.length > 0) {
-                log('📥 Найдено сообщений: ' + myMessages.length);
-                myMessages.forEach(msg => {
-                    log('   От: ' + msg.from + ' - ' + msg.text);
+            try {
+                // Включаем камеру
+                localStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: true, 
+                    audio: true 
                 });
-                // Очищаем после прочтения
-                messages[myId] = [];
-                localStorage.setItem('test_messages', JSON.stringify(messages));
-            } else {
-                log('⏳ Новых сообщений нет');
+                document.getElementById('localVideo').srcObject = localStream;
+                
+                // Создаём соединение
+                peerConnection = new RTCPeerConnection(config);
+                
+                // Добавляем видео
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+                
+                // Получаем видео собеседника
+                peerConnection.ontrack = (event) => {
+                    document.getElementById('remoteVideo').srcObject = event.streams[0];
+                };
+                
+                // ICE кандидаты
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        saveSignal(targetId, {
+                            type: 'candidate',
+                            from: myId,
+                            candidate: event.candidate
+                        });
+                    }
+                };
+                
+                // Создаём предложение
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                
+                // Отправляем предложение
+                saveSignal(targetId, {
+                    type: 'offer',
+                    from: myId,
+                    fromName: myName,
+                    offer: offer
+                });
+                
+                showScreen3();
+                
+                alert('✅ Звонок отправлен!\n\nТеперь попросите собеседника открыть сайт и проверить входящие');
+                
+            } catch (e) {
+                alert('Ошибка камеры: ' + e.message);
             }
         }
         
-        // Автоматическая проверка каждые 3 секунды
-        setInterval(() => {
-            if (myId) checkMessages();
-        }, 3000);
+        // Завершить звонок
+        function hangup() {
+            if (localStream) localStream.getTracks().forEach(t => t.stop());
+            if (peerConnection) peerConnection.close();
+            showScreen2();
+        }
+        
+        // Сохранить сигнал
+        function saveSignal(to, signal) {
+            if (!signals[to]) signals[to] = [];
+            signals[to].push(signal);
+            localStorage.setItem('signals', JSON.stringify(signals));
+        }
+        
+        // Проверить входящие сигналы
+        function checkSignals() {
+            if (!myId) return;
+            
+            const mySignals = signals[myId];
+            if (!mySignals || mySignals.length === 0) return;
+            
+            const signal = mySignals.shift();
+            localStorage.setItem('signals', JSON.stringify(signals));
+            
+            if (signal.type === 'offer') {
+                // Входящий звонок
+                if (confirm(`📞 Входящий звонок от ${signal.fromName || signal.from}\nОтветить?`)) {
+                    answerCall(signal);
+                }
+            }
+            else if (signal.type === 'answer' && peerConnection) {
+                peerConnection.setRemoteDescription(signal.answer);
+            }
+            else if (signal.type === 'candidate' && peerConnection) {
+                peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
+            }
+        }
+        
+        // Ответить на звонок
+        async function answerCall(signal) {
+            try {
+                localStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: true, 
+                    audio: true 
+                });
+                document.getElementById('localVideo').srcObject = localStream;
+                
+                peerConnection = new RTCPeerConnection(config);
+                
+                localStream.getTracks().forEach(track => {
+                    peerConnection.addTrack(track, localStream);
+                });
+                
+                peerConnection.ontrack = (event) => {
+                    document.getElementById('remoteVideo').srcObject = event.streams[0];
+                };
+                
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        saveSignal(signal.from, {
+                            type: 'candidate',
+                            from: myId,
+                            candidate: event.candidate
+                        });
+                    }
+                };
+                
+                await peerConnection.setRemoteDescription(signal.offer);
+                
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                
+                saveSignal(signal.from, {
+                    type: 'answer',
+                    from: myId,
+                    answer: answer
+                });
+                
+                showScreen3();
+                
+            } catch (e) {
+                alert('Ошибка: ' + e.message);
+            }
+        }
+        
+        // Переключение экранов
+        function showScreen1() {
+            document.getElementById('screen1').classList.remove('hidden');
+            document.getElementById('screen2').classList.add('hidden');
+            document.getElementById('screen3').classList.add('hidden');
+        }
+        
+        function showScreen2() {
+            document.getElementById('screen1').classList.add('hidden');
+            document.getElementById('screen2').classList.remove('hidden');
+            document.getElementById('screen3').classList.add('hidden');
+        }
+        
+        function showScreen3() {
+            document.getElementById('screen1').classList.add('hidden');
+            document.getElementById('screen2').classList.add('hidden');
+            document.getElementById('screen3').classList.remove('hidden');
+        }
     </script>
 </body>
 </html>
