@@ -3,142 +3,246 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fatkullin Simple</title>
+    <title>Fatkullin Video</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 20px;
-            background: #1e2f4a;
-            color: white;
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
-        .container {
+        
+        body {
+            background: #0a1a2a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        
+        .app {
+            width: 100%;
             max-width: 400px;
-            margin: 0 auto;
-        }
-        .card {
             background: white;
             border-radius: 30px;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: #1e2f4a;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 32px;
+            color: gold;
+            font-weight: bold;
+        }
+        
+        .content {
             padding: 20px;
-            margin: 20px 0;
-            color: black;
         }
-        input {
-            width: 100%;
-            padding: 15px;
-            font-size: 18px;
-            border: 2px solid #ccc;
-            border-radius: 25px;
-            margin: 10px 0;
-            box-sizing: border-box;
+        
+        .card {
+            background: #f5f5f5;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 15px 0;
         }
+        
         button {
             width: 100%;
-            padding: 15px;
+            padding: 18px;
             font-size: 18px;
             border: none;
-            border-radius: 25px;
-            background: #fbbf24;
+            border-radius: 30px;
+            background: gold;
             color: #1e2f4a;
             font-weight: bold;
-            margin: 5px 0;
+            margin: 10px 0;
             cursor: pointer;
         }
+        
         button.red {
             background: #dc2626;
             color: white;
         }
-        video {
+        
+        input, textarea {
             width: 100%;
-            background: black;
-            border-radius: 20px;
-            margin: 5px 0;
+            padding: 15px;
+            font-size: 16px;
+            border: 2px solid #ddd;
+            border-radius: 15px;
+            margin: 10px 0;
+            box-sizing: border-box;
         }
+        
+        textarea {
+            height: 100px;
+            font-size: 12px;
+        }
+        
+        .code-box {
+            background: #1e2f4a;
+            color: gold;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            word-break: break-all;
+            margin: 10px 0;
+        }
+        
         .hidden {
             display: none;
         }
-        .code {
-            background: #1e2f4a;
-            color: #fbbf24;
-            padding: 15px;
+        
+        video {
+            width: 100%;
+            background: black;
             border-radius: 15px;
-            font-size: 12px;
-            word-break: break-all;
-            margin: 10px 0;
+            margin: 5px 0;
+        }
+        
+        #localVideo {
+            width: 100px;
+            height: 130px;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            border: 3px solid white;
+            border-radius: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Fatkullin Video</h1>
-        
-        <!-- Экран 1: Вход -->
-        <div id="screen1" class="card">
-            <h2>👋 Вход</h2>
-            <input type="text" id="userName" placeholder="Ваше имя" value="User">
-            <button onclick="enter()">Войти</button>
+    <div class="app">
+        <div class="header">
+            <div class="logo">Fatkullin Video</div>
+            <p>Семейные звонки</p>
         </div>
         
-        <!-- Экран 2: Ожидание -->
-        <div id="screen2" class="card hidden">
-            <h2>👤 <span id="displayName"></span></h2>
-            <p>Ваш код:</p>
-            <div class="code" id="myCode"></div>
-            <hr>
-            <h3>Позвонить</h3>
-            <input type="text" id="targetCode" placeholder="Введите код собеседника">
-            <button onclick="startCall()">📞 Позвонить</button>
-            <button class="red" onclick="logout()">Выйти</button>
-        </div>
-        
-        <!-- Экран 3: Звонок -->
-        <div id="screen3" class="card hidden">
-            <video id="remoteVideo" autoplay></video>
-            <video id="localVideo" autoplay muted></video>
-            <button class="red" onclick="hangup()">Завершить</button>
+        <div class="content">
+            <!-- Экран 1: Регистрация -->
+            <div id="screen1">
+                <div class="card">
+                    <h3>👋 Вход</h3>
+                    <input type="text" id="userName" placeholder="Ваше имя" value="User">
+                    <button onclick="register()">Войти</button>
+                </div>
+            </div>
+            
+            <!-- Экран 2: Главный -->
+            <div id="screen2" class="hidden">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between;">
+                        <h3><span id="displayName"></span></h3>
+                        <button onclick="logout()" style="width: auto; padding: 8px 15px;">Выйти</button>
+                    </div>
+                    
+                    <p>Ваш ID:</p>
+                    <div class="code-box" id="myId"></div>
+                    
+                    <hr style="margin: 20px 0;">
+                    
+                    <h3>📞 Позвонить</h3>
+                    <input type="text" id="targetId" placeholder="Введите ID собеседника">
+                    <button onclick="step1Call()">Начать звонок</button>
+                </div>
+            </div>
+            
+            <!-- Экран 3: Ожидание -->
+            <div id="screen3" class="hidden">
+                <div class="card">
+                    <h3>📤 ШАГ 1</h3>
+                    <p>Скопируйте этот код:</p>
+                    <textarea id="offerCode" readonly></textarea>
+                    <button onclick="copyOffer()">📋 Копировать</button>
+                    <p style="color: #666; margin: 10px 0;">Отправьте этот код собеседнику в Telegram/WhatsApp</p>
+                    <button onclick="waitForAnswer()">Я отправил, жду ответ</button>
+                </div>
+            </div>
+            
+            <!-- Экран 4: Ожидание ответа -->
+            <div id="screen4" class="hidden">
+                <div class="card">
+                    <h3>⏳ Ожидание ответа</h3>
+                    <p>Попросите собеседника прислать код ответа</p>
+                    <textarea id="answerInput" placeholder="Вставьте код ответа сюда"></textarea>
+                    <button onclick="step2Answer()">Применить ответ</button>
+                </div>
+            </div>
+            
+            <!-- Экран 5: Входящий -->
+            <div id="screen5" class="hidden">
+                <div class="card">
+                    <h3 style="color: #dc2626;">📞 Входящий звонок</h3>
+                    <p>Вам звонят! Вставьте код от собеседника:</p>
+                    <textarea id="incomingOffer" placeholder="Вставьте код"></textarea>
+                    <button onclick="acceptCall()">✅ Ответить</button>
+                    <button class="red" onclick="cancelCall()">❌ Отклонить</button>
+                </div>
+            </div>
+            
+            <!-- Экран 6: Отправка ответа -->
+            <div id="screen6" class="hidden">
+                <div class="card">
+                    <h3>📤 ШАГ 2</h3>
+                    <p>Скопируйте этот код и отправьте собеседнику:</p>
+                    <textarea id="answerCode" readonly></textarea>
+                    <button onclick="copyAnswer()">📋 Копировать</button>
+                    <button onclick="startCall()">Начать разговор</button>
+                </div>
+            </div>
+            
+            <!-- Экран 7: Звонок -->
+            <div id="screen7" class="hidden">
+                <video id="remoteVideo" autoplay></video>
+                <video id="localVideo" autoplay muted></video>
+                <button class="red" onclick="endCall()">Завершить</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Простые переменные
+        // Переменные
         let myId = '';
         let myName = '';
         let localStream = null;
         let peerConnection = null;
-        let remoteStream = null;
+        let currentOffer = null;
         
         // STUN сервер
         const config = {
             iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
         };
         
-        // Хранилище сигналов
-        let signals = JSON.parse(localStorage.getItem('signals') || '{}');
-        
-        // Вход
-        function enter() {
+        // Регистрация
+        function register() {
             myName = document.getElementById('userName').value || 'User';
-            myId = 'user_' + Date.now().toString().slice(-6);
+            myId = myName + '_' + Math.random().toString(36).substring(2, 8);
             
             document.getElementById('displayName').innerText = myName;
-            document.getElementById('myCode').innerText = myId;
+            document.getElementById('myId').innerText = myId;
             
-            showScreen2();
-            
-            // Проверяем входящие каждые 2 секунды
-            setInterval(checkSignals, 2000);
+            showScreen('screen2');
         }
         
         // Выход
         function logout() {
-            showScreen1();
+            showScreen('screen1');
         }
         
-        // Начать звонок
-        async function startCall() {
-            const targetId = document.getElementById('targetCode').value;
-            if (!targetId) return alert('Введите код');
+        // ШАГ 1: Начать звонок
+        async function step1Call() {
+            const targetId = document.getElementById('targetId').value;
+            if (!targetId) {
+                alert('Введите ID собеседника');
+                return;
+            }
             
             try {
                 // Включаем камеру
@@ -161,85 +265,80 @@
                     document.getElementById('remoteVideo').srcObject = event.streams[0];
                 };
                 
-                // ICE кандидаты
-                peerConnection.onicecandidate = (event) => {
-                    if (event.candidate) {
-                        saveSignal(targetId, {
-                            type: 'candidate',
-                            from: myId,
-                            candidate: event.candidate
-                        });
-                    }
-                };
-                
                 // Создаём предложение
                 const offer = await peerConnection.createOffer();
                 await peerConnection.setLocalDescription(offer);
                 
-                // Отправляем предложение
-                saveSignal(targetId, {
+                // Сохраняем для отправки
+                const offerData = {
                     type: 'offer',
                     from: myId,
                     fromName: myName,
+                    to: targetId,
                     offer: offer
-                });
+                };
                 
-                showScreen3();
+                document.getElementById('offerCode').value = JSON.stringify(offerData);
+                currentOffer = offerData;
                 
-                alert('✅ Звонок отправлен!\n\nТеперь попросите собеседника открыть сайт и проверить входящие');
+                showScreen('screen3');
                 
             } catch (e) {
                 alert('Ошибка камеры: ' + e.message);
             }
         }
         
-        // Завершить звонок
-        function hangup() {
-            if (localStream) localStream.getTracks().forEach(t => t.stop());
-            if (peerConnection) peerConnection.close();
-            showScreen2();
+        // Копировать предложение
+        function copyOffer() {
+            const text = document.getElementById('offerCode').value;
+            navigator.clipboard.writeText(text);
+            alert('Код скопирован! Отправьте собеседнику');
         }
         
-        // Сохранить сигнал
-        function saveSignal(to, signal) {
-            if (!signals[to]) signals[to] = [];
-            signals[to].push(signal);
-            localStorage.setItem('signals', JSON.stringify(signals));
+        // Жду ответ
+        function waitForAnswer() {
+            showScreen('screen4');
         }
         
-        // Проверить входящие сигналы
-        function checkSignals() {
-            if (!myId) return;
+        // ШАГ 2: Вставить ответ
+        async function step2Answer() {
+            const answerText = document.getElementById('answerInput').value;
             
-            const mySignals = signals[myId];
-            if (!mySignals || mySignals.length === 0) return;
-            
-            const signal = mySignals.shift();
-            localStorage.setItem('signals', JSON.stringify(signals));
-            
-            if (signal.type === 'offer') {
-                // Входящий звонок
-                if (confirm(`📞 Входящий звонок от ${signal.fromName || signal.from}\nОтветить?`)) {
-                    answerCall(signal);
-                }
-            }
-            else if (signal.type === 'answer' && peerConnection) {
-                peerConnection.setRemoteDescription(signal.answer);
-            }
-            else if (signal.type === 'candidate' && peerConnection) {
-                peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
-            }
-        }
-        
-        // Ответить на звонок
-        async function answerCall(signal) {
             try {
+                const answerData = JSON.parse(answerText);
+                
+                if (answerData.type === 'answer') {
+                    await peerConnection.setRemoteDescription(answerData.answer);
+                    showScreen('screen7');
+                }
+                
+            } catch (e) {
+                alert('Ошибка: неверный формат кода');
+            }
+        }
+        
+        // Входящий звонок (для принимающего)
+        function acceptCall() {
+            const offerText = document.getElementById('incomingOffer').value;
+            
+            try {
+                const offerData = JSON.parse(offerText);
+                handleIncoming(offerData);
+            } catch (e) {
+                alert('Неверный формат кода');
+            }
+        }
+        
+        async function handleIncoming(offerData) {
+            try {
+                // Включаем камеру
                 localStream = await navigator.mediaDevices.getUserMedia({ 
                     video: true, 
                     audio: true 
                 });
                 document.getElementById('localVideo').srcObject = localStream;
                 
+                // Создаём соединение
                 peerConnection = new RTCPeerConnection(config);
                 
                 localStream.getTracks().forEach(track => {
@@ -250,52 +349,71 @@
                     document.getElementById('remoteVideo').srcObject = event.streams[0];
                 };
                 
-                peerConnection.onicecandidate = (event) => {
-                    if (event.candidate) {
-                        saveSignal(signal.from, {
-                            type: 'candidate',
-                            from: myId,
-                            candidate: event.candidate
-                        });
-                    }
-                };
+                // Принимаем предложение
+                await peerConnection.setRemoteDescription(offerData.offer);
                 
-                await peerConnection.setRemoteDescription(signal.offer);
-                
+                // Создаём ответ
                 const answer = await peerConnection.createAnswer();
                 await peerConnection.setLocalDescription(answer);
                 
-                saveSignal(signal.from, {
+                // Подготавливаем ответ для отправки
+                const answerData = {
                     type: 'answer',
                     from: myId,
+                    to: offerData.from,
                     answer: answer
-                });
+                };
                 
-                showScreen3();
+                document.getElementById('answerCode').value = JSON.stringify(answerData);
+                
+                showScreen('screen6');
                 
             } catch (e) {
                 alert('Ошибка: ' + e.message);
             }
         }
         
+        // Копировать ответ
+        function copyAnswer() {
+            const text = document.getElementById('answerCode').value;
+            navigator.clipboard.writeText(text);
+            alert('Код скопирован! Отправьте собеседнику');
+        }
+        
+        // Начать разговор (после отправки ответа)
+        function startCall() {
+            showScreen('screen7');
+        }
+        
+        // Отклонить
+        function cancelCall() {
+            showScreen('screen2');
+        }
+        
+        // Завершить звонок
+        function endCall() {
+            if (localStream) {
+                localStream.getTracks().forEach(t => t.stop());
+            }
+            if (peerConnection) {
+                peerConnection.close();
+            }
+            showScreen('screen2');
+        }
+        
         // Переключение экранов
-        function showScreen1() {
-            document.getElementById('screen1').classList.remove('hidden');
-            document.getElementById('screen2').classList.add('hidden');
-            document.getElementById('screen3').classList.add('hidden');
+        function showScreen(screenId) {
+            const screens = ['screen1', 'screen2', 'screen3', 'screen4', 'screen5', 'screen6', 'screen7'];
+            screens.forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(screenId).classList.remove('hidden');
         }
         
-        function showScreen2() {
-            document.getElementById('screen1').classList.add('hidden');
-            document.getElementById('screen2').classList.remove('hidden');
-            document.getElementById('screen3').classList.add('hidden');
-        }
-        
-        function showScreen3() {
-            document.getElementById('screen1').classList.add('hidden');
-            document.getElementById('screen2').classList.add('hidden');
-            document.getElementById('screen3').classList.remove('hidden');
-        }
+        // Проверка входящих (для принимающего)
+        window.checkIncoming = function() {
+            showScreen('screen5');
+        };
     </script>
 </body>
 </html>
