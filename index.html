@@ -3,84 +3,544 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fatkullin Видео</title>
+    <title>Fatkullin Video</title>
     <style>
-        body { 
-            font-family: Arial; 
-            text-align: center; 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a2f4a;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        
+        .app {
+            width: 100%;
+            max-width: 400px;
+            background: white;
+            border-radius: 40px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+        
+        .header {
+            background: #1a2f4a;
+            padding: 30px 20px;
+            color: white;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: 800;
+            color: #fbbf24;
+            margin-bottom: 15px;
+        }
+        
+        .content {
+            padding: 24px 20px;
+            background: #f8fafc;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 24px;
             padding: 20px;
-            background: #f0f0f0;
+            margin: 15px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        button { 
-            padding: 20px; 
-            font-size: 24px; 
-            margin: 10px; 
+        
+        .id-box {
+            background: #1e293b;
+            color: #fbbf24;
+            padding: 20px;
             border-radius: 20px;
-            background: gold;
+            font-size: 24px;
+            text-align: center;
+            letter-spacing: 3px;
+            margin: 15px 0;
+            word-break: break-all;
+        }
+        
+        input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 30px;
+            font-size: 16px;
+            margin: 8px 0;
+        }
+        
+        button {
+            width: 100%;
+            padding: 16px;
             border: none;
-            width: 90%;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 700;
+            background: #fbbf24;
+            color: #1a2f4a;
+            margin: 8px 0;
+            cursor: pointer;
+            box-shadow: 0 5px 0 #b45309;
         }
-        video { 
-            width: 100%; 
-            max-width: 400px; 
-            background: black; 
-            margin: 5px;
+        
+        button:active {
+            transform: translateY(4px);
+            box-shadow: 0 1px 0 #b45309;
+        }
+        
+        button.danger {
+            background: #dc2626;
+            color: white;
+            box-shadow: 0 5px 0 #7f1d1d;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            min-height: 400px;
+            background: #0f172a;
             border-radius: 20px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        #localVideo {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 100px;
+            height: 140px;
+            border-radius: 12px;
+            border: 3px solid white;
+            object-fit: cover;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .status {
+            text-align: center;
+            color: #64748b;
+            margin: 10px 0;
+        }
+        
+        .grid {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .grid button {
+            flex: 1;
         }
     </style>
 </head>
 <body>
-    <h1>📱 Fatkullin</h1>
-    
-    <div id="login">
-        <input type="text" id="name" placeholder="Ваше имя" value="User"><br>
-        <button onclick="login()">Войти</button>
-    </div>
-    
-    <div id="app" style="display:none">
-        <h2 id="username"></h2>
-        
-        <div id="contacts">
-            <input type="text" id="friendId" placeholder="ID друга">
-            <button onclick="call()">📹 Позвонить</button>
+    <div class="app">
+        <div class="header">
+            <div class="logo">Fatkullin Video</div>
+            <div>Семейные видеозвонки</div>
         </div>
         
-        <div id="call" style="display:none">
-            <video id="localVideo" autoplay muted></video>
-            <video id="remoteVideo" autoplay></video>
-            <button onclick="hangup()" style="background:red; color:white">Завершить</button>
+        <div class="content">
+            <!-- ЭКРАН ВХОДА -->
+            <div id="loginScreen">
+                <div class="card">
+                    <h3 style="margin-bottom: 15px;">👋 Вход в приложение</h3>
+                    <input type="text" id="userName" placeholder="Ваше имя" value="Участник">
+                    <button id="joinBtn">Войти</button>
+                </div>
+            </div>
+            
+            <!-- ОСНОВНОЙ ЭКРАН -->
+            <div id="mainScreen" class="hidden">
+                <div class="card">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 id="displayName"></h3>
+                        <button class="danger" id="logoutBtn" style="width: auto; padding: 10px 20px;">Выйти</button>
+                    </div>
+                    <div class="id-box" id="myId"></div>
+                    <p class="status">⬆️ Это ваш ID. Поделитесь им с теми, кто хочет вам позвонить</p>
+                </div>
+                
+                <div class="card">
+                    <h3>📞 Позвонить</h3>
+                    <input type="text" id="targetId" placeholder="Введите ID собеседника">
+                    <button id="callBtn">Начать звонок</button>
+                </div>
+                
+                <div class="card" id="activeCall" style="display: none;">
+                    <div class="video-container">
+                        <video id="remoteVideo" autoplay playsinline></video>
+                        <video id="localVideo" autoplay playsinline muted></video>
+                    </div>
+                    <div class="grid">
+                        <button id="muteAudioBtn">🔇 Выкл звук</button>
+                        <button id="muteVideoBtn">📹 Выкл видео</button>
+                    </div>
+                    <button class="danger" id="hangupBtn">Завершить звонок</button>
+                </div>
+            </div>
+            
+            <!-- ЭКРАН ВХОДЯЩЕГО ЗВОНКА -->
+            <div id="incomingScreen" class="hidden">
+                <div class="card">
+                    <h3>📞 Входящий звонок!</h3>
+                    <p id="callerInfo">Вам звонят</p>
+                    <div class="grid">
+                        <button id="answerBtn">✅ Ответить</button>
+                        <button class="danger" id="rejectBtn">❌ Отклонить</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Простое хранилище
-        let myId = Date.now() + '';
-        let localStream;
+        // ==================== ПРОСТАЯ СИГНАЛИЗАЦИЯ ====================
         
-        function login() {
-            document.getElementById('login').style.display = 'none';
-            document.getElementById('app').style.display = 'block';
-            document.getElementById('username').innerText = 'Ваш ID: ' + myId;
-        }
-        
-        async function call() {
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
-                document.getElementById('localVideo').srcObject = localStream;
-                document.getElementById('contacts').style.display = 'none';
-                document.getElementById('call').style.display = 'block';
+        class SimpleSignaling {
+            constructor() {
+                this.users = JSON.parse(localStorage.getItem('users') || '{}');
+                this.currentUser = null;
+                this.localStream = null;
+                this.peerConnection = null;
+                this.pendingCalls = [];
                 
-                alert('✅ ЗВОНОК НАЧАТ!\n\nВаш собеседник должен тоже нажать "Позвонить" и ввести ваш ID: ' + myId);
-            } catch(e) {
-                alert('Ошибка камеры: ' + e);
+                // STUN серверы Google (работают всегда)
+                this.config = {
+                    iceServers: [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' },
+                        { urls: 'stun:stun2.l.google.com:19302' }
+                    ]
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                // Вход
+                document.getElementById('joinBtn').onclick = () => {
+                    const name = document.getElementById('userName').value || 'Участник';
+                    this.login(name);
+                };
+                
+                // Выход
+                document.getElementById('logoutBtn').onclick = () => {
+                    this.logout();
+                };
+                
+                // Начать звонок
+                document.getElementById('callBtn').onclick = () => {
+                    const targetId = document.getElementById('targetId').value;
+                    if (targetId) this.startCall(targetId);
+                };
+                
+                // Завершить звонок
+                document.getElementById('hangupBtn').onclick = () => {
+                    this.endCall();
+                };
+                
+                // Ответить на звонок
+                document.getElementById('answerBtn').onclick = () => {
+                    this.answerCall();
+                };
+                
+                // Отклонить звонок
+                document.getElementById('rejectBtn').onclick = () => {
+                    this.rejectCall();
+                };
+                
+                // Управление звуком/видео
+                document.getElementById('muteAudioBtn').onclick = (e) => {
+                    if (this.localStream) {
+                        const enabled = this.localStream.getAudioTracks()[0].enabled;
+                        this.localStream.getAudioTracks()[0].enabled = !enabled;
+                        e.target.textContent = !enabled ? '🔊 Вкл звук' : '🔇 Выкл звук';
+                    }
+                };
+                
+                document.getElementById('muteVideoBtn').onclick = (e) => {
+                    if (this.localStream) {
+                        const enabled = this.localStream.getVideoTracks()[0].enabled;
+                        this.localStream.getVideoTracks()[0].enabled = !enabled;
+                        e.target.textContent = !enabled ? '📹 Вкл видео' : '📹 Выкл видео';
+                    }
+                };
+                
+                // Проверяем входящие вызовы каждую секунду
+                setInterval(() => this.checkIncomingCalls(), 1000);
+            }
+            
+            login(name) {
+                // Создаём уникальный ID
+                const id = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
+                
+                this.currentUser = {
+                    id: id,
+                    name: name,
+                    online: true
+                };
+                
+                // Сохраняем
+                this.users[id] = this.currentUser;
+                localStorage.setItem('users', JSON.stringify(this.users));
+                localStorage.setItem('currentUser', id);
+                
+                // Показываем основной экран
+                document.getElementById('loginScreen').classList.add('hidden');
+                document.getElementById('mainScreen').classList.remove('hidden');
+                document.getElementById('displayName').textContent = `👤 ${name}`;
+                document.getElementById('myId').textContent = id;
+            }
+            
+            logout() {
+                if (this.currentUser) {
+                    delete this.users[this.currentUser.id];
+                    localStorage.setItem('users', JSON.stringify(this.users));
+                    localStorage.removeItem('currentUser');
+                }
+                
+                if (this.localStream) {
+                    this.localStream.getTracks().forEach(t => t.stop());
+                }
+                
+                if (this.peerConnection) {
+                    this.peerConnection.close();
+                }
+                
+                document.getElementById('mainScreen').classList.add('hidden');
+                document.getElementById('loginScreen').classList.remove('hidden');
+                document.getElementById('activeCall').style.display = 'none';
+            }
+            
+            async startCall(targetId) {
+                const target = this.users[targetId];
+                if (!target) {
+                    alert('Пользователь не найден или не в сети');
+                    return;
+                }
+                
+                try {
+                    // Получаем доступ к камере
+                    this.localStream = await navigator.mediaDevices.getUserMedia({
+                        video: true,
+                        audio: true
+                    });
+                    
+                    document.getElementById('localVideo').srcObject = this.localStream;
+                    
+                    // Создаём соединение
+                    this.peerConnection = new RTCPeerConnection(this.config);
+                    
+                    // Добавляем локальные треки
+                    this.localStream.getTracks().forEach(track => {
+                        this.peerConnection.addTrack(track, this.localStream);
+                    });
+                    
+                    // Получаем удалённый поток
+                    this.peerConnection.ontrack = (event) => {
+                        document.getElementById('remoteVideo').srcObject = event.streams[0];
+                    };
+                    
+                    // Обмен ICE кандидатами
+                    this.peerConnection.onicecandidate = (event) => {
+                        if (event.candidate) {
+                            // Сохраняем кандидата для собеседника
+                            this.saveCandidate(targetId, event.candidate);
+                        }
+                    };
+                    
+                    // Создаём оффер
+                    const offer = await this.peerConnection.createOffer();
+                    await this.peerConnection.setLocalDescription(offer);
+                    
+                    // Отправляем приглашение
+                    this.saveOffer(targetId, {
+                        from: this.currentUser.id,
+                        fromName: this.currentUser.name,
+                        offer: offer
+                    });
+                    
+                    // Показываем экран звонка
+                    document.getElementById('activeCall').style.display = 'block';
+                    
+                    alert('✅ Звонок отправлен! Ждём ответа...');
+                    
+                } catch (error) {
+                    alert('Ошибка доступа к камере');
+                }
+            }
+            
+            async answerCall() {
+                const call = this.pendingCalls[0];
+                if (!call) return;
+                
+                try {
+                    // Получаем доступ к камере
+                    this.localStream = await navigator.mediaDevices.getUserMedia({
+                        video: true,
+                        audio: true
+                    });
+                    
+                    document.getElementById('localVideo').srcObject = this.localStream;
+                    
+                    // Создаём соединение
+                    this.peerConnection = new RTCPeerConnection(this.config);
+                    
+                    // Добавляем локальные треки
+                    this.localStream.getTracks().forEach(track => {
+                        this.peerConnection.addTrack(track, this.localStream);
+                    });
+                    
+                    // Получаем удалённый поток
+                    this.peerConnection.ontrack = (event) => {
+                        document.getElementById('remoteVideo').srcObject = event.streams[0];
+                    };
+                    
+                    // Обмен ICE кандидатами
+                    this.peerConnection.onicecandidate = (event) => {
+                        if (event.candidate) {
+                            this.saveCandidate(call.from, event.candidate);
+                        }
+                    };
+                    
+                    // Устанавливаем удалённое описание (оффер)
+                    await this.peerConnection.setRemoteDescription(call.offer);
+                    
+                    // Создаём ответ
+                    const answer = await this.peerConnection.createAnswer();
+                    await this.peerConnection.setLocalDescription(answer);
+                    
+                    // Отправляем ответ
+                    this.saveAnswer(call.from, answer);
+                    
+                    // Прячем экран входящего
+                    document.getElementById('incomingScreen').classList.add('hidden');
+                    document.getElementById('mainScreen').classList.remove('hidden');
+                    document.getElementById('activeCall').style.display = 'block';
+                    
+                    this.pendingCalls = [];
+                    
+                } catch (error) {
+                    alert('Ошибка при ответе');
+                }
+            }
+            
+            rejectCall() {
+                this.pendingCalls = [];
+                document.getElementById('incomingScreen').classList.add('hidden');
+                document.getElementById('mainScreen').classList.remove('hidden');
+            }
+            
+            endCall() {
+                if (this.localStream) {
+                    this.localStream.getTracks().forEach(t => t.stop());
+                }
+                
+                if (this.peerConnection) {
+                    this.peerConnection.close();
+                    this.peerConnection = null;
+                }
+                
+                document.getElementById('activeCall').style.display = 'none';
+                document.getElementById('remoteVideo').srcObject = null;
+            }
+            
+            // ============ ХРАНИЛИЩЕ СИГНАЛОВ ============
+            
+            saveOffer(to, offer) {
+                const offers = JSON.parse(localStorage.getItem('offers') || '{}');
+                if (!offers[to]) offers[to] = [];
+                offers[to].push(offer);
+                localStorage.setItem('offers', JSON.stringify(offers));
+            }
+            
+            saveAnswer(to, answer) {
+                const answers = JSON.parse(localStorage.getItem('answers') || '{}');
+                if (!answers[to]) answers[to] = [];
+                answers[to].push(answer);
+                localStorage.setItem('answers', JSON.stringify(answers));
+            }
+            
+            saveCandidate(to, candidate) {
+                const candidates = JSON.parse(localStorage.getItem('candidates') || '{}');
+                if (!candidates[to]) candidates[to] = [];
+                candidates[to].push(candidate);
+                localStorage.setItem('candidates', JSON.stringify(candidates));
+            }
+            
+            checkIncomingCalls() {
+                if (!this.currentUser) return;
+                
+                // Проверяем входящие офферы
+                const offers = JSON.parse(localStorage.getItem('offers') || '{}');
+                const myOffers = offers[this.currentUser.id] || [];
+                
+                if (myOffers.length > 0 && this.pendingCalls.length === 0) {
+                    this.pendingCalls = myOffers;
+                    
+                    // Показываем экран входящего звонка
+                    document.getElementById('mainScreen').classList.add('hidden');
+                    document.getElementById('incomingScreen').classList.remove('hidden');
+                    document.getElementById('callerInfo').textContent = 
+                        `📞 Звонит: ${myOffers[0].fromName || myOffers[0].from}`;
+                    
+                    // Очищаем офферы
+                    delete offers[this.currentUser.id];
+                    localStorage.setItem('offers', JSON.stringify(offers));
+                }
+                
+                // Проверяем ответы (если мы звонили)
+                const answers = JSON.parse(localStorage.getItem('answers') || '{}');
+                const myAnswers = answers[this.currentUser.id] || [];
+                
+                if (myAnswers.length > 0 && this.peerConnection) {
+                    this.peerConnection.setRemoteDescription(myAnswers[0]);
+                    delete answers[this.currentUser.id];
+                    localStorage.setItem('answers', JSON.stringify(answers));
+                }
+                
+                // Проверяем ICE кандидатов
+                const candidates = JSON.parse(localStorage.getItem('candidates') || '{}');
+                const myCandidates = candidates[this.currentUser.id] || [];
+                
+                if (myCandidates.length > 0 && this.peerConnection) {
+                    myCandidates.forEach(candidate => {
+                        this.peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
+                    });
+                    delete candidates[this.currentUser.id];
+                    localStorage.setItem('candidates', JSON.stringify(candidates));
+                }
             }
         }
         
-        function hangup() {
-            if(localStream) localStream.getTracks().forEach(t => t.stop());
-            document.getElementById('call').style.display = 'none';
-            document.getElementById('contacts').style.display = 'block';
-        }
+        // Запускаем приложение
+        new SimpleSignaling();
+        
+        // Проверяем, есть ли сохранённая сессия
+        window.onload = () => {
+            const savedId = localStorage.getItem('currentUser');
+            if (savedId) {
+                document.getElementById('userName').value = 'С возвращением!';
+            }
+        };
     </script>
 </body>
 </html>
