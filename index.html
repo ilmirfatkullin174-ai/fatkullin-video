@@ -3,441 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fatkullin видео</title>
+    <title>Тест Fatkullin</title>
     <style>
-        body { 
+        body {
             font-family: Arial, sans-serif;
             text-align: center;
-            padding: 15px;
-            background: #1e2f4a;
-            color: white;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+            padding: 20px;
+            background: #f0f0f0;
         }
-        
         .container {
             max-width: 400px;
             margin: 0 auto;
-            width: 100%;
-        }
-        
-        .logo {
-            font-size: 32px;
-            font-weight: bold;
-            color: gold;
-            margin: 20px 0;
-        }
-        
-        .card {
             background: white;
+            padding: 20px;
             border-radius: 20px;
-            padding: 20px;
-            margin: 15px 0;
-            color: black;
-            box-shadow: 0 10px 0 #0f1f33;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
-        
-        .id-box {
-            background: #1e2f4a;
-            color: gold;
-            padding: 20px;
-            border-radius: 15px;
-            font-size: 22px;
-            font-weight: bold;
-            word-break: break-all;
+        button {
+            width: 100%;
+            padding: 15px;
             margin: 10px 0;
-            border: 2px solid gold;
+            font-size: 18px;
+            border-radius: 10px;
+            border: none;
+            background: #4CAF50;
+            color: white;
+            cursor: pointer;
         }
-        
+        .id-box {
+            background: #333;
+            color: #ff0;
+            padding: 15px;
+            font-size: 20px;
+            border-radius: 10px;
+            margin: 10px 0;
+            word-break: break-all;
+        }
         input {
             width: 100%;
             padding: 15px;
             font-size: 18px;
-            border: 2px solid #ccc;
-            border-radius: 30px;
             margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 10px;
             box-sizing: border-box;
         }
-        
-        button {
-            width: 100%;
-            padding: 18px;
-            font-size: 20px;
-            font-weight: bold;
-            border: none;
-            border-radius: 30px;
-            background: gold;
-            color: #1e2f4a;
-            margin: 8px 0;
-            cursor: pointer;
-            box-shadow: 0 5px 0 #b8860b;
-        }
-        
-        button.red {
-            background: #dc2626;
-            color: white;
-            box-shadow: 0 5px 0 #7f1d1d;
-        }
-        
-        button:active {
-            transform: translateY(4px);
-            box-shadow: 0 1px 0 #b8860b;
-        }
-        
-        .video-box {
-            background: black;
-            border-radius: 20px;
-            overflow: hidden;
-            margin: 10px 0;
-            position: relative;
-            min-height: 300px;
-        }
-        
-        video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        #localVideo {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            width: 80px;
-            height: 120px;
-            border-radius: 10px;
-            border: 2px solid white;
-            object-fit: cover;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        .step {
-            font-size: 14px;
-            color: #64748b;
-            margin: 10px 0;
-        }
-        
-        .online-users {
-            background: #f0f0f0;
-            padding: 10px;
-            border-radius: 15px;
-            margin: 10px 0;
+        .log {
             text-align: left;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            height: 150px;
+            overflow-y: auto;
+            font-size: 12px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="logo">📱 Fatkullin Video</div>
+        <h1>📱 Fatkullin ТЕСТ</h1>
         
-        <!-- ШАГ 1: Вход -->
-        <div id="step1">
-            <div class="card">
-                <h2>👋 Вход</h2>
-                <input type="text" id="userName" placeholder="Ваше имя" value="User" maxlength="20">
-                <button id="enterBtn">Войти</button>
-            </div>
+        <div>
+            <button onclick="generateId()">1. Создать мой ID</button>
+            <div class="id-box" id="myId">---</div>
         </div>
         
-        <!-- ШАГ 2: Главная -->
-        <div id="step2" class="hidden">
-            <div class="card">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h3 id="displayName"></h3>
-                    <button id="exitBtn" style="width: auto; padding: 10px 20px;">Выход</button>
-                </div>
-                
-                <div class="id-box" id="myId"></div>
-                <div class="step">⬆️ Ваш ID. Поделитесь им!</div>
-                
-                <hr style="margin: 20px 0;">
-                
-                <h3>📞 Кому позвонить?</h3>
-                <input type="text" id="targetId" placeholder="Введите ID собеседника">
-                <button id="callBtn">Начать звонок</button>
-            </div>
+        <hr>
+        
+        <div>
+            <input type="text" id="targetId" placeholder="Введите ID собеседника">
+            <button onclick="sendMessage()">2. Отправить тестовое сообщение</button>
         </div>
         
-        <!-- ШАГ 3: Звонок -->
-        <div id="step3" class="hidden">
-            <div class="card">
-                <h3 id="callStatus">Звонок...</h3>
-                
-                <div class="video-box">
-                    <video id="remoteVideo" autoplay playsinline></video>
-                    <video id="localVideo" autoplay playsinline muted></video>
-                </div>
-                
-                <button class="red" id="hangupBtn">Завершить звонок</button>
-            </div>
-        </div>
+        <hr>
         
-        <!-- ВХОДЯЩИЙ ЗВОНОК -->
-        <div id="incomingCall" class="hidden">
-            <div class="card">
-                <h2 style="color: #dc2626;">📞 Входящий звонок!</h2>
-                <p id="callerName"></p>
-                <div style="display: flex; gap: 10px;">
-                    <button id="acceptBtn" style="flex: 2;">✅ Ответить</button>
-                    <button class="red" id="declineBtn" style="flex: 1;">❌</button>
-                </div>
-            </div>
+        <div>
+            <h3>Лог сообщений:</h3>
+            <div class="log" id="log"></div>
+            <button onclick="checkMessages()">3. Проверить входящие</button>
         </div>
     </div>
 
     <script>
-        // ============= ПРОСТЕЙШЕЕ РЕШЕНИЕ =============
-        
         let myId = '';
-        let myName = '';
-        let localStream = null;
-        let peerConnection = null;
-        let callActive = false;
+        let messages = JSON.parse(localStorage.getItem('test_messages') || '{}');
         
-        // STUN серверы
-        const config = {
-            iceServers: [
-                { urls: 'stun:stun.l.google.com:19302' }
-            ]
-        };
+        function log(text) {
+            const log = document.getElementById('log');
+            log.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + text + '</div>';
+            log.scrollTop = log.scrollHeight;
+        }
         
-        // Хранилище для сигналов
-        let signals = JSON.parse(localStorage.getItem('calls') || '{}');
+        function generateId() {
+            myId = 'user_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+            document.getElementById('myId').innerText = myId;
+            log('✅ Ваш ID создан: ' + myId);
+        }
         
-        // Элементы
-        const step1 = document.getElementById('step1');
-        const step2 = document.getElementById('step2');
-        const step3 = document.getElementById('step3');
-        const incomingCall = document.getElementById('incomingCall');
-        const myIdEl = document.getElementById('myId');
-        const displayName = document.getElementById('displayName');
-        const remoteVideo = document.getElementById('remoteVideo');
-        const localVideo = document.getElementById('localVideo');
-        const callStatus = document.getElementById('callStatus');
-        const callerName = document.getElementById('callerName');
-        
-        // Вход
-        document.getElementById('enterBtn').onclick = () => {
-            myName = document.getElementById('userName').value || 'User';
-            myId = 'id_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4);
-            
-            displayName.textContent = `👤 ${myName}`;
-            myIdEl.textContent = myId;
-            
-            step1.classList.add('hidden');
-            step2.classList.remove('hidden');
-            
-            // Запускаем проверку входящих
-            checkIncoming();
-        };
-        
-        // Выход
-        document.getElementById('exitBtn').onclick = () => {
-            step2.classList.add('hidden');
-            step1.classList.remove('hidden');
-            if (localStream) {
-                localStream.getTracks().forEach(t => t.stop());
-            }
-        };
-        
-        // Начать звонок
-        document.getElementById('callBtn').onclick = async () => {
+        function sendMessage() {
             const targetId = document.getElementById('targetId').value;
             if (!targetId) {
                 alert('Введите ID собеседника');
                 return;
             }
             
-            try {
-                // Получаем камеру
-                localStream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: true
-                });
-                
-                localVideo.srcObject = localStream;
-                
-                // Создаём соединение
-                peerConnection = new RTCPeerConnection(config);
-                
-                // Добавляем видео
-                localStream.getTracks().forEach(track => {
-                    peerConnection.addTrack(track, localStream);
-                });
-                
-                // Получаем видео собеседника
-                peerConnection.ontrack = (event) => {
-                    remoteVideo.srcObject = event.streams[0];
-                };
-                
-                // ICE кандидаты
-                peerConnection.onicecandidate = (event) => {
-                    if (event.candidate) {
-                        sendSignal(targetId, {
-                            type: 'candidate',
-                            from: myId,
-                            candidate: event.candidate
-                        });
-                    }
-                };
-                
-                // Создаём оффер
-                const offer = await peerConnection.createOffer();
-                await peerConnection.setLocalDescription(offer);
-                
-                // Отправляем оффер
-                sendSignal(targetId, {
-                    type: 'offer',
-                    from: myId,
-                    fromName: myName,
-                    offer: offer
-                });
-                
-                callStatus.textContent = '📞 Звоним...';
-                step2.classList.add('hidden');
-                step3.classList.remove('hidden');
-                callActive = true;
-                
-            } catch (e) {
-                alert('Ошибка камеры: ' + e);
-            }
-        };
-        
-        // Ответить на звонок
-        document.getElementById('acceptBtn').onclick = async () => {
-            const callData = signals[myId]?.pop();
-            if (!callData) return;
-            
-            try {
-                // Получаем камеру
-                localStream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: true
-                });
-                
-                localVideo.srcObject = localStream;
-                
-                // Создаём соединение
-                peerConnection = new RTCPeerConnection(config);
-                
-                // Добавляем видео
-                localStream.getTracks().forEach(track => {
-                    peerConnection.addTrack(track, localStream);
-                });
-                
-                // Получаем видео собеседника
-                peerConnection.ontrack = (event) => {
-                    remoteVideo.srcObject = event.streams[0];
-                };
-                
-                // ICE кандидаты
-                peerConnection.onicecandidate = (event) => {
-                    if (event.candidate) {
-                        sendSignal(callData.from, {
-                            type: 'candidate',
-                            from: myId,
-                            candidate: event.candidate
-                        });
-                    }
-                };
-                
-                // Устанавливаем оффер
-                await peerConnection.setRemoteDescription(callData.offer);
-                
-                // Создаём ответ
-                const answer = await peerConnection.createAnswer();
-                await peerConnection.setLocalDescription(answer);
-                
-                // Отправляем ответ
-                sendSignal(callData.from, {
-                    type: 'answer',
-                    from: myId,
-                    answer: answer
-                });
-                
-                // Показываем экран звонка
-                incomingCall.classList.add('hidden');
-                step2.classList.add('hidden');
-                step3.classList.remove('hidden');
-                callStatus.textContent = '🔴 Разговор';
-                callActive = true;
-                
-                localStorage.setItem('calls', JSON.stringify(signals));
-                
-            } catch (e) {
-                alert('Ошибка: ' + e);
-            }
-        };
-        
-        // Отклонить звонок
-        document.getElementById('declineBtn').onclick = () => {
-            incomingCall.classList.add('hidden');
-            step2.classList.remove('hidden');
-        };
-        
-        // Завершить звонок
-        document.getElementById('hangupBtn').onclick = () => {
-            if (peerConnection) {
-                peerConnection.close();
-                peerConnection = null;
+            if (!myId) {
+                alert('Сначала создайте свой ID');
+                return;
             }
             
-            if (localStream) {
-                localStream.getTracks().forEach(t => t.stop());
-                localStream = null;
-            }
+            // Сохраняем сообщение для целевого пользователя
+            if (!messages[targetId]) messages[targetId] = [];
+            messages[targetId].push({
+                from: myId,
+                text: 'Тест ' + Date.now(),
+                time: new Date().toLocaleTimeString()
+            });
             
-            remoteVideo.srcObject = null;
-            localVideo.srcObject = null;
-            
-            step3.classList.add('hidden');
-            step2.classList.remove('hidden');
-            callActive = false;
-        };
-        
-        // Отправка сигнала
-        function sendSignal(to, signal) {
-            if (!signals[to]) signals[to] = [];
-            signals[to].push(signal);
-            localStorage.setItem('calls', JSON.stringify(signals));
+            localStorage.setItem('test_messages', JSON.stringify(messages));
+            log('📤 Отправлено пользователю ' + targetId);
         }
         
-        // Проверка входящих
-        function checkIncoming() {
-            setInterval(() => {
-                if (!myId || callActive) return;
-                
-                const mySignals = signals[myId];
-                if (mySignals && mySignals.length > 0) {
-                    const signal = mySignals[mySignals.length - 1];
-                    
-                    if (signal.type === 'offer') {
-                        // Входящий звонок
-                        callerName.textContent = `📞 ${signal.fromName || signal.from}`;
-                        step2.classList.add('hidden');
-                        incomingCall.classList.remove('hidden');
-                    }
-                    else if (signal.type === 'answer' && peerConnection) {
-                        // Ответ на наш звонок
-                        peerConnection.setRemoteDescription(signal.answer);
-                        callStatus.textContent = '🔴 Разговор';
-                        signals[myId] = [];
-                    }
-                    else if (signal.type === 'candidate' && peerConnection) {
-                        // ICE кандидат
-                        peerConnection.addIceCandidate(new RTCIceCandidate(signal.candidate));
-                        signals[myId] = signals[myId].filter(s => s.type !== 'candidate');
-                    }
-                    
-                    localStorage.setItem('calls', JSON.stringify(signals));
-                }
-            }, 1000);
+        function checkMessages() {
+            if (!myId) {
+                alert('Сначала создайте свой ID');
+                return;
+            }
+            
+            const myMessages = messages[myId] || [];
+            
+            if (myMessages.length > 0) {
+                log('📥 Найдено сообщений: ' + myMessages.length);
+                myMessages.forEach(msg => {
+                    log('   От: ' + msg.from + ' - ' + msg.text);
+                });
+                // Очищаем после прочтения
+                messages[myId] = [];
+                localStorage.setItem('test_messages', JSON.stringify(messages));
+            } else {
+                log('⏳ Новых сообщений нет');
+            }
         }
+        
+        // Автоматическая проверка каждые 3 секунды
+        setInterval(() => {
+            if (myId) checkMessages();
+        }, 3000);
     </script>
 </body>
 </html>
