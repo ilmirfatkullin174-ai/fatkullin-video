@@ -77,6 +77,7 @@
             border-radius: 60px;
             border: none;
             box-shadow: 0 7px 0 #0b7e5a;
+            transition: 0.1s;
         }
         .big-button:active {
             transform: translateY(5px);
@@ -494,7 +495,7 @@
     const firebaseConfig = {
         apiKey: "AIzaSyCLp2XyscnKwqUHIKrYuC6S40fRkFoHkoc",
         authDomain: "cach-79d1c.firebaseapp.com",
-        databaseURL: "https://cach-79d1c-default-rtdb.firebaseio.com",
+        databaseURL: "https://cach-79d1c-default-rtdb.firebaseio.com/",
         projectId: "cach-79d1c",
         storageBucket: "cach-79d1c.firebasestorage.app",
         messagingSenderId: "487135929966",
@@ -512,7 +513,7 @@
     let selectedType = '🏂';
     let currentTab = 'all';
     let selectedCategory = '🍔 Еда';
-    let pendingDeleteIndex = null; // Для подтверждения удаления
+    let pendingDeleteIndex = null;
 
     // ЖЁСТКИЕ ПРИКОЛЫ
     const jokes = [
@@ -565,16 +566,14 @@
 
     // ===== ФУНКЦИИ FIREBASE =====
     function loadFromFirebase() {
-        const dbRef = database.ref('gory2026');
+        const dbRef = firebase.database().ref('gory2026');
         dbRef.on('value', (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 participants = data.participants || [];
                 expenses = data.expenses || [];
-                categories = data.categories || ['🍔 Еда', '🍺 Пиво', '🥛 Молоко', '🏨 Отель', '🏋️ Баня', '⛽ Бензин', '🚡 Скипасс'];
-            } else {
-                participants = [];
-                expenses = [];
+                categories = data.categories || categories;
+                console.log('✅ Данные загружены из Firebase');
             }
             updateUI();
             renderCategories();
@@ -584,10 +583,14 @@
     }
 
     function saveToFirebase() {
-        database.ref('gory2026').set({
+        firebase.database().ref('gory2026').set({
             participants: participants,
             expenses: expenses,
             categories: categories
+        }).then(() => {
+            console.log('✅ Данные сохранены в Firebase');
+        }).catch((error) => {
+            console.error('❌ Ошибка сохранения:', error);
         });
     }
 
@@ -842,16 +845,6 @@
                 return;
             }
             
-            // Шутка если выбраны не все
-            if (consumers.length < participants.length) {
-                const jokes = [
-                    'А ЧЕ НА ВСЕХ НЕ ДЕЛИШЬ? ЖАДИНА?',
-                    'ОПЯТЬ ТОЛЬКО ДЛЯ ИЗБРАННЫХ?',
-                    'НУ ТЫ И СОБИРАТЕЛЬ КОМПАНИИ!'
-                ];
-                showJoke(jokes[Math.floor(Math.random() * jokes.length)], '🦊');
-            }
-            
             saveExpense(payer, [{
                 category: selectedCategory,
                 amount: amount,
@@ -1053,9 +1046,8 @@
     // Инициализация
     window.deleteExpense = deleteExpense;
     
-    // Загружаем данные из Firebase
+    // Загружаем данные из Firebase при старте
     loadFromFirebase();
-    renderCategories();
 </script>
 </body>
 </html>
