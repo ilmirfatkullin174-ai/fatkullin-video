@@ -249,7 +249,16 @@
             transform: translateY(6px);
             box-shadow: 0 2px 0 #b0450c;
         }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.5rem;
+            color: #1f4a7a;
+        }
     </style>
+    <!-- Подключаем Firebase SDK через CDN (для совместимости с вашим кодом) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
 <body>
 
@@ -306,9 +315,24 @@
 </div>
 
 <script>
-    // --- Хранилище ---
+    // ===== НАСТРОЙКА FIREBASE =====
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyCLp2XyscnKwqUHIKrYuC6S40fRkFoHkoc",
+      authDomain: "cach-79d1c.firebaseapp.com",
+      projectId: "cach-79d1c",
+      storageBucket: "cach-79d1c.firebasestorage.app",
+      messagingSenderId: "487135929966",
+      appId: "1:487135929966:web:c6b5768640ea812bb7e87f"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    // ===== Хранилище (теперь с Firebase) =====
     let expenses = [];
-    let participants = []; // ТЕПЕРЬ ПОЛНОСТЬЮ ПУСТО
+    let participants = [];
 
     // --- DOM элементы ---
     const payerSelect = document.getElementById('payer');
@@ -349,7 +373,7 @@
         "ЭКОНОМЬ, СУПЕРСТАР!"
     ];
 
-    // --- Модалка: показать на весь экран (только по кнопке Прочитано исчезает) ---
+    // --- Модалка: показать на весь экран ---
     function showFullscreenJoke(payerName = '', amount = 0) {
         let randomIndex = Math.floor(Math.random() * jokes.length);
         let joke = jokes[randomIndex];
@@ -388,6 +412,32 @@
         payerSelect.innerHTML = html;
     }
 
+    // --- Загрузка данных из Firebase ---
+    function loadFromFirebase() {
+        const dbRef = database.ref('gory2026');
+        dbRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                participants = data.participants || [];
+                expenses = data.expenses || [];
+            } else {
+                participants = [];
+                expenses = [];
+            }
+            updateParticipantsSelect();
+            renderFullList();
+            renderDebts();
+        });
+    }
+
+    // --- Сохранение данных в Firebase ---
+    function saveToFirebase() {
+        database.ref('gory2026').set({
+            participants: participants,
+            expenses: expenses
+        });
+    }
+
     // --- Добавление участника ---
     addParticipantBtn.addEventListener('click', function() {
         const newName = newParticipantInput.value.trim();
@@ -406,7 +456,8 @@
         newParticipantInput.value = '';
         renderFullList();
         renderDebts();
-        // Небольшой тост вместо модалки, но можно и модалку
+        saveToFirebase(); // Сохраняем в Firebase
+        
         modalJokeText.innerText = `🏆 ${newName} В СОСТАВЕ! ПОГНАЛИ!`;
         modalOverlay.classList.add('show');
     });
@@ -450,6 +501,7 @@
         amountInput.value = '';
         renderFullList();
         renderDebts();
+        saveToFirebase(); // Сохраняем в Firebase
         showFullscreenJoke(payer, amount);
     });
 
@@ -460,6 +512,7 @@
             expenses.splice(index, 1);
             renderFullList();
             renderDebts();
+            saveToFirebase(); // Сохраняем в Firebase
             modalJokeText.innerText = `❌ ТРАТА ${deleted.desc} УДАЛЕНА! МОЛОДЕЦ!`;
             modalOverlay.classList.add('show');
         }
@@ -569,10 +622,8 @@
         totalSpan.innerHTML = `💰 ВСЕГО: ${total} ₽`;
     }
 
-    // --- Стартовый рендер (всё пусто) ---
-    updateParticipantsSelect();
-    renderFullList();
-    renderDebts();
+    // --- Загружаем данные при старте ---
+    loadFromFirebase();
 </script>
 </body>
 </html>
