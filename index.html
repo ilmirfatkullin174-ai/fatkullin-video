@@ -1,191 +1,578 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fatkullin - вход</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>⛷️ Траты в Горах</title>
     <style>
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
         }
-        
         body {
-            background: #0f172a;
-            min-height: 100vh;
+            background: #e2eaf6;
+            margin: 0;
+            padding: 16px;
+            padding-bottom: 30px;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        h1 {
+            font-size: 2.3rem;
+            text-align: center;
+            margin: 5px 0 10px;
+            color: #0f2c40;
+            text-shadow: 3px 3px 0 #9fc5f0;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border-radius: 36px;
+            padding: 20px;
+            margin-bottom: 18px;
+            box-shadow: 0 12px 30px rgba(0, 30, 60, 0.2);
+            border: 2px solid white;
+        }
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: #1f4a7a;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 20px;
+            gap: 8px;
         }
-        
-        .app {
-            width: 100%;
-            max-width: 400px;
-            background: white;
-            border-radius: 30px;
-            padding: 30px 20px;
-        }
-        
-        h1 {
-            color: #1e2f4a;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-        
-        input {
-            width: 100%;
-            padding: 15px;
-            margin: 8px 0;
-            border: 2px solid #ddd;
-            border-radius: 25px;
-            font-size: 16px;
-        }
-        
-        button {
-            width: 100%;
-            padding: 15px;
-            margin: 8px 0;
-            border: none;
-            border-radius: 25px;
-            background: #fbbf24;
-            color: #1e2f4a;
+        select, input, button {
             font-size: 18px;
+            padding: 16px 20px;
+            border-radius: 40px;
+            border: 2px solid #cbd6e6;
+            width: 100%;
+            margin-bottom: 14px;
+            background: white;
+        }
+        select {
+            appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            font-weight: 600;
+        }
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+            margin-bottom: 18px;
+        }
+        .cat-btn {
+            background: #f0f5fd;
+            border: none;
+            padding: 14px 0;
+            border-radius: 50px;
+            font-size: 1.8rem;
+            border: 3px solid transparent;
+        }
+        .cat-btn.selected {
+            background: #1e88e5;
+            color: white;
+            border-color: #0d3b66;
+        }
+        .big-button {
+            background: #10b981;
+            color: white;
+            font-weight: 900;
+            font-size: 24px;
+            padding: 20px;
+            border-radius: 60px;
+            border: none;
+            box-shadow: 0 7px 0 #0b7e5a;
+            transition: 0.05s;
+        }
+        .big-button:active {
+            transform: translateY(5px);
+            box-shadow: 0 2px 0 #0b7e5a;
+        }
+        .add-participant {
+            display: flex;
+            gap: 10px;
+        }
+        .add-participant input {
+            flex: 1;
+            margin-bottom: 0;
+            padding: 16px;
+        }
+        .add-participant button {
+            width: auto;
+            background: #f97316;
+            color: white;
+            font-weight: bold;
+            padding: 16px 22px;
+            border-radius: 50px;
+            border: none;
+            box-shadow: 0 5px 0 #b45f0a;
+            white-space: nowrap;
+            margin-bottom: 0;
+        }
+        .expense-full-list {
+            max-height: 270px;
+            overflow-y: auto;
+        }
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #bdd3ec;
+        }
+        .expense-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .expense-cat {
+            font-size: 1.7rem;
+        }
+        .expense-payer {
+            background: #c1daf5;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-weight: 700;
+        }
+        .expense-date {
+            font-size: 13px;
+            color: #336699;
+            background: #eef4fa;
+            padding: 3px 8px;
+            border-radius: 30px;
+        }
+        .expense-amount {
+            font-weight: 800;
+            font-size: 18px;
+            margin-right: 8px;
+        }
+        .delete-btn {
+            background: none;
+            border: none;
+            font-size: 26px;
+            color: #aa2222;
             font-weight: bold;
             cursor: pointer;
         }
-        
-        .error {
-            color: red;
+        .debt-item {
+            background: #e8f2fe;
+            border-radius: 28px;
+            padding: 18px;
+            margin-bottom: 12px;
+            border-left: 10px solid #0f7b6b;
+        }
+        .debt-payer { font-weight: 900; color: #b13e3e; font-size: 1.2rem; }
+        .debt-receiver { font-weight: 900; color: #127c6c; font-size: 1.2rem; }
+        .debt-amount { font-size: 28px; font-weight: 900; margin-top: 6px; }
+        .total-sum {
+            font-size: 22px;
             text-align: center;
-            margin: 10px 0;
-            font-size: 14px;
-        }
-        
-        .success {
-            color: green;
-            text-align: center;
-            margin: 10px 0;
-            font-size: 14px;
-        }
-        
-        .hidden {
-            display: none;
-        }
-        
-        .clear-btn {
-            background: #dc2626;
+            background: #0d3347;
             color: white;
+            padding: 18px;
+            border-radius: 60px;
             margin-top: 20px;
+        }
+        .empty-state {
+            text-align: center;
+            color: #6f8faf;
+            padding: 30px 0;
+            font-style: italic;
+        }
+
+        /* МОДАЛКА НА ВЕСЬ ЭКРАН */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+        }
+        .modal-overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+        .modal-content {
+            background: #fef9e8;
+            width: 90%;
+            max-width: 450px;
+            border-radius: 70px;
+            padding: 30px 20px;
+            text-align: center;
+            box-shadow: 0 30px 60px black;
+            border: 5px solid #f7c35c;
+            transform: scale(0.9);
+            transition: 0.2s;
+        }
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+        }
+        .modal-joke {
+            font-size: 32px;
+            font-weight: 900;
+            line-height: 1.4;
+            margin: 20px 0;
+            color: #1f2937;
+        }
+        .modal-emoji {
+            font-size: 70px;
+        }
+        .modal-button {
+            background: #f97316;
+            border: none;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            padding: 22px 20px;
+            border-radius: 120px;
+            width: 100%;
+            box-shadow: 0 8px 0 #b0450c;
+            transition: 0.05s;
+        }
+        .modal-button:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 #b0450c;
         }
     </style>
 </head>
 <body>
-    <div class="app">
-        <h1>Fatkullin</h1>
-        
-        <!-- Форма регистрации -->
-        <div id="registerBlock">
-            <h3>Регистрация</h3>
-            <input type="text" id="regName" placeholder="Имя" value="Иван">
-            <input type="tel" id="regPhone" placeholder="Телефон" value="+79991234567">
-            <input type="password" id="regPassword" placeholder="Пароль" value="123">
-            <button onclick="register()">Зарегистрироваться</button>
+
+<div class="container">
+    <h1>🏔️ ГОРЫ 2026</h1>
+
+    <!-- Добавление участников (пустой старт) -->
+    <div class="card">
+        <h2>⛷️ Добавь гонщиков</h2>
+        <select id="payer"></select>
+        <div class="add-participant">
+            <input type="text" id="newParticipant" placeholder="Имя, напр. Колян">
+            <button id="addParticipantBtn">➕</button>
         </div>
-        
-        <!-- Форма входа -->
-        <div id="loginBlock">
-            <h3>Вход</h3>
-            <input type="tel" id="loginPhone" placeholder="Телефон" value="+79991234567">
-            <input type="password" id="loginPassword" placeholder="Пароль" value="123">
-            <button onclick="login()">Войти</button>
-        </div>
-        
-        <!-- Кнопка очистки (на случай ошибок) -->
-        <button class="clear-btn" onclick="clearAll()">Очистить всё и начать заново</button>
-        
-        <div id="message" class="error"></div>
     </div>
 
-    <script>
-        // Полная очистка
-        function clearAll() {
-            localStorage.clear();
-            document.getElementById('message').innerHTML = '✅ Всё очищено. Теперь можно регистрироваться заново.';
+    <!-- Ввод траты -->
+    <div class="card">
+        <h2>💸 Записать</h2>
+        <div class="category-grid">
+            <button class="cat-btn" data-cat="🍔">🍔</button>
+            <button class="cat-btn" data-cat="🍺">🍺</button>
+            <button class="cat-btn" data-cat="🏨">🏨</button>
+            <button class="cat-btn" data-cat="🏋️">🏋️</button>
+            <button class="cat-btn" data-cat="⛽">⛽</button>
+            <button class="cat-btn" data-cat="🚡">🚡</button>
+        </div>
+        <input type="text" id="description" readonly value="🍔">
+        <input type="number" id="amount" placeholder="Сумма в рублях" step="1" min="0">
+        <button class="big-button" id="addExpense">ЗАПИСАТЬ</button>
+    </div>
+
+    <!-- Все траты (с датой) -->
+    <div class="card">
+        <h2>📋 Все траты</h2>
+        <div id="fullExpenseList" class="expense-full-list"></div>
+    </div>
+
+    <!-- Долги -->
+    <div class="card">
+        <h2>🧾 Кто кому должен</h2>
+        <div id="debtsList"></div>
+        <div id="totalSpent" class="total-sum">0 ₽</div>
+    </div>
+</div>
+
+<!-- МОДАЛКА НА ВЕСЬ ЭКРАН -->
+<div id="jokeModal" class="modal-overlay">
+    <div class="modal-content">
+        <div class="modal-emoji">🏂❄️</div>
+        <div class="modal-joke" id="modalJokeText">Загрузка...</div>
+        <button class="modal-button" id="modalGotItBtn">ПРОЧИТАНО 🔥</button>
+    </div>
+</div>
+
+<script>
+    // --- Хранилище ---
+    let expenses = [];
+    let participants = []; // ТЕПЕРЬ ПОЛНОСТЬЮ ПУСТО
+
+    // --- DOM элементы ---
+    const payerSelect = document.getElementById('payer');
+    const newParticipantInput = document.getElementById('newParticipant');
+    const addParticipantBtn = document.getElementById('addParticipantBtn');
+    const catButtons = document.querySelectorAll('.cat-btn');
+    const descInput = document.getElementById('description');
+    const amountInput = document.getElementById('amount');
+    const addBtn = document.getElementById('addExpense');
+    const fullListDiv = document.getElementById('fullExpenseList');
+    const debtsDiv = document.getElementById('debtsList');
+    const totalSpan = document.getElementById('totalSpent');
+    const modalOverlay = document.getElementById('jokeModal');
+    const modalJokeText = document.getElementById('modalJokeText');
+    const modalGotItBtn = document.getElementById('modalGotItBtn');
+
+    // --- Приколы (полный экран) ---
+    const jokes = [
+        "ЛОХ! ОПЯТЬ ТРАТИШЬ?",
+        "СКИПАСС САМ НЕ КУПИТСЯ!",
+        "ДЕНЬГИ УЛЕТЕЛИ БЫСТРЕЕ ТЕБЯ С ГОРЫ!",
+        "ТЫ ЧЕ, ТАМ ШАМПАНСКОЕ РАЗЛИВАЮТ?",
+        "КОШЕЛЁК ПЛАЧЕТ ГОРЮЧИМИ СЛЕЗАМИ",
+        "ЭЙ, ШУМАХЕР, ПРИТОРМОЗИ!",
+        "ЭТО БЫЛИ ПОСЛЕДНИЕ НА БУТЕРБРОДЫ?",
+        "СЕГОДНЯ ТЫ ГЕРОЙ, ЗАВТРА — БОМЖ НА СКЛОНЕ",
+        "КРЕДИТКА ДЫМИТ, КАК ТВОИ ТОРМОЗА!",
+        "БАБКИ РАСТАЯЛИ БЫСТРЕЕ СНЕГА ВЕСНОЙ",
+        "ТРАТИТЬ — ТВОЁ ГОРНОЛЫЖНОЕ АМПЛУА",
+        "МЕГАРАСХОД! ТАК И ДО ДОЛГОВОЙ ЯМЫ",
+        "ТЫ СЛУЧАЙНО НЕ ОЛИГАРХ?",
+        "ОП, И СНОВА МИНУС НА КАРТЕ",
+        "ДЕНЬГИ ЛЮБЯТ СЧЁТ, А ТЫ ИХ ТРАТИШЬ",
+        "ПОДУМАЙ О ЗАВТРАШНЕМ ДНЕ... ХА-ХА",
+        "БЮДЖЕТ ТРЕЩИТ ПО ШВАМ!",
+        "НУ ТЫ И МОТ! ВСЁ НА КАФЕ?",
+        "СКОРО ПРОДАВАТЬ ЛЫЖИ ПРИДЁТСЯ",
+        "ЭКОНОМЬ, СУПЕРСТАР!"
+    ];
+
+    // --- Модалка: показать на весь экран (только по кнопке Прочитано исчезает) ---
+    function showFullscreenJoke(payerName = '', amount = 0) {
+        let randomIndex = Math.floor(Math.random() * jokes.length);
+        let joke = jokes[randomIndex];
+        if (payerName && Math.random() > 0.4) {
+            joke = payerName + '! ' + joke;
+        }
+        if (amount > 7000 && Math.random() > 0.5) {
+            joke = joke + '  ЦЕЛЫХ ' + amount + ' РУБ.';
+        }
+        modalJokeText.innerText = joke;
+        modalOverlay.classList.add('show');
+    }
+
+    // --- Закрыть модалку (только по кнопке) ---
+    modalGotItBtn.addEventListener('click', function() {
+        modalOverlay.classList.remove('show');
+    });
+
+    // --- Выбор категории ---
+    catButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            catButtons.forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            descInput.value = this.dataset.cat;
+        });
+    });
+    catButtons[0]?.classList.add('selected');
+    descInput.value = '🍔';
+
+    // --- Обновление списка участников в select ---
+    function updateParticipantsSelect() {
+        let html = '';
+        participants.forEach(p => {
+            html += `<option value="${p}">${p}</option>`;
+        });
+        payerSelect.innerHTML = html;
+    }
+
+    // --- Добавление участника ---
+    addParticipantBtn.addEventListener('click', function() {
+        const newName = newParticipantInput.value.trim();
+        if (newName === '') {
+            modalJokeText.innerText = 'ИМЯ ВВЕДИ, ЙЕТИ!';
+            modalOverlay.classList.add('show');
+            return;
+        }
+        if (participants.includes(newName)) {
+            modalJokeText.innerText = 'ТАКОЙ УЖЕ ЕСТЬ, ГОЛОВА!';
+            modalOverlay.classList.add('show');
+            return;
+        }
+        participants.push(newName);
+        updateParticipantsSelect();
+        newParticipantInput.value = '';
+        renderFullList();
+        renderDebts();
+        // Небольшой тост вместо модалки, но можно и модалку
+        modalJokeText.innerText = `🏆 ${newName} В СОСТАВЕ! ПОГНАЛИ!`;
+        modalOverlay.classList.add('show');
+    });
+
+    // --- Добавить расход ---
+    addBtn.addEventListener('click', function() {
+        if (participants.length === 0) {
+            modalJokeText.innerText = 'СНАЧАЛА ГОСТЕЙ ДОБАВЬ!';
+            modalOverlay.classList.add('show');
+            return;
+        }
+        const payer = payerSelect.value;
+        const description = descInput.value;
+        const amount = parseFloat(amountInput.value);
+
+        if (!payer) {
+            modalJokeText.innerText = 'ВЫБЕРИ, КТО ПЛАТИТ!';
+            modalOverlay.classList.add('show');
+            return;
+        }
+        if (isNaN(amount) || amount <= 0) {
+            modalJokeText.innerText = 'СУММУ НОРМАЛЬНУЮ ВПИШИ!';
+            modalOverlay.classList.add('show');
+            return;
         }
 
-        // Регистрация
-        function register() {
-            const name = document.getElementById('regName').value;
-            const phone = document.getElementById('regPhone').value;
-            const password = document.getElementById('regPassword').value;
-            
-            if (!name || !phone || !password) {
-                document.getElementById('message').innerHTML = '❌ Заполните все поля';
-                return;
-            }
-            
-            // Получаем текущих пользователей
-            let users = [];
-            const stored = localStorage.getItem('users');
-            if (stored) {
-                users = JSON.parse(stored);
-            }
-            
-            // Проверяем есть ли такой телефон
-            const exists = users.find(u => u.phone === phone);
-            if (exists) {
-                document.getElementById('message').innerHTML = '❌ Этот телефон уже зарегистрирован. Нажмите "Очистить всё" или войдите.';
-                return;
-            }
-            
-            // Создаём нового пользователя
-            const newUser = {
-                id: Date.now() + '',
-                name: name,
-                phone: phone,
-                password: password
-            };
-            
-            users.push(newUser);
-            localStorage.setItem('users', JSON.stringify(users));
-            localStorage.setItem('currentUser', JSON.stringify(newUser));
-            
-            document.getElementById('message').innerHTML = '✅ Регистрация успешна! Перенаправление...';
-            
-            // Переходим на главную
-            setTimeout(() => {
-                window.location.href = 'main.html';
-            }, 1000);
+        // Дата и время
+        const now = new Date();
+        const dateStr = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'numeric' });
+        const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+
+        expenses.push({
+            payer: payer,
+            desc: description,
+            amount: amount,
+            date: dateStr,
+            time: timeStr,
+            timestamp: now.getTime()
+        });
+
+        amountInput.value = '';
+        renderFullList();
+        renderDebts();
+        showFullscreenJoke(payer, amount);
+    });
+
+    // --- Удаление расхода ---
+    function deleteExpense(index) {
+        const deleted = expenses[index];
+        if (deleted) {
+            expenses.splice(index, 1);
+            renderFullList();
+            renderDebts();
+            modalJokeText.innerText = `❌ ТРАТА ${deleted.desc} УДАЛЕНА! МОЛОДЕЦ!`;
+            modalOverlay.classList.add('show');
         }
-        
-        // Вход
-        function login() {
-            const phone = document.getElementById('loginPhone').value;
-            const password = document.getElementById('loginPassword').value;
-            
-            const stored = localStorage.getItem('users');
-            if (!stored) {
-                document.getElementById('message').innerHTML = '❌ Нет зарегистрированных пользователей';
-                return;
-            }
-            
-            const users = JSON.parse(stored);
-            const user = users.find(u => u.phone === phone && u.password === password);
-            
-            if (user) {
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                document.getElementById('message').innerHTML = '✅ Вход выполнен! Перенаправление...';
-                
-                setTimeout(() => {
-                    window.location.href = 'main.html';
-                }, 1000);
-            } else {
-                document.getElementById('message').innerHTML = '❌ Неверный телефон или пароль';
-            }
+    }
+
+    // --- Полный список трат (с датой и временем) ---
+    function renderFullList() {
+        if (expenses.length === 0) {
+            fullListDiv.innerHTML = '<div class="empty-state">⛷️ ПОКА НИЧЕГО НЕ ПОТРАЧЕНО</div>';
+            return;
         }
-    </script>
+        let html = '';
+        [...expenses].reverse().forEach((exp, revIndex) => {
+            const originalIndex = expenses.length - 1 - revIndex;
+            html += `
+                <div class="expense-item">
+                    <div class="expense-left">
+                        <span class="expense-cat">${exp.desc}</span>
+                        <span class="expense-payer">${exp.payer}</span>
+                        <span class="expense-date">${exp.date || '?'} ${exp.time || ''}</span>
+                    </div>
+                    <div style="display: flex; align-items: center;">
+                        <span class="expense-amount">${exp.amount} ₽</span>
+                        <button class="delete-btn" data-index="${originalIndex}">✕</button>
+                    </div>
+                </div>
+            `;
+        });
+        fullListDiv.innerHTML = html;
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const index = e.target.dataset.index;
+                if (index !== undefined) deleteExpense(parseInt(index));
+            });
+        });
+    }
+
+    // --- Расчет долгов ---
+    function renderDebts() {
+        if (expenses.length === 0 || participants.length === 0) {
+            debtsDiv.innerHTML = '<div class="empty-state">⛷️ ДОБАВЬ ЛЮДЕЙ И ТРАТЫ</div>';
+            totalSpan.innerHTML = '0 ₽';
+            return;
+        }
+
+        let spent = {};
+        participants.forEach(p => spent[p] = 0);
+        let total = 0;
+        expenses.forEach(exp => {
+            if (spent.hasOwnProperty(exp.payer)) {
+                spent[exp.payer] += exp.amount;
+                total += exp.amount;
+            }
+        });
+
+        const average = total / participants.length;
+        let balance = {};
+        participants.forEach(p => {
+            balance[p] = spent[p] - average;
+        });
+
+        let debtors = [];
+        let creditors = [];
+        participants.forEach(p => {
+            const bal = Math.round(balance[p] * 100) / 100;
+            if (bal < -0.01) debtors.push({ name: p, amount: -bal });
+            else if (bal > 0.01) creditors.push({ name: p, amount: bal });
+        });
+
+        let transactions = [];
+        let i = 0, j = 0;
+        let sortedDebtors = debtors.map(d => ({ ...d }));
+        let sortedCreditors = creditors.map(c => ({ ...c }));
+
+        while (i < sortedDebtors.length && j < sortedCreditors.length) {
+            let debtor = sortedDebtors[i];
+            let creditor = sortedCreditors[j];
+            let amount = Math.min(debtor.amount, creditor.amount);
+            amount = Math.round(amount * 100) / 100;
+
+            if (amount > 0.01) {
+                transactions.push({ from: debtor.name, to: creditor.name, amount: amount });
+            }
+
+            debtor.amount -= amount;
+            creditor.amount -= amount;
+
+            if (debtor.amount < 0.01) i++;
+            if (creditor.amount < 0.01) j++;
+        }
+
+        if (transactions.length === 0) {
+            debtsDiv.innerHTML = '<div class="empty-state">💰 ВСЕ ПРИ СВОИХ</div>';
+        } else {
+            let html = '';
+            transactions.forEach(t => {
+                html += `
+                    <div class="debt-item">
+                        <div><span class="debt-payer">${t.from}</span> → <span class="debt-receiver">${t.to}</span></div>
+                        <div class="debt-amount">💸 ${t.amount} ₽</div>
+                    </div>
+                `;
+            });
+            debtsDiv.innerHTML = html;
+        }
+
+        totalSpan.innerHTML = `💰 ВСЕГО: ${total} ₽`;
+    }
+
+    // --- Стартовый рендер (всё пусто) ---
+    updateParticipantsSelect();
+    renderFullList();
+    renderDebts();
+</script>
 </body>
 </html>
