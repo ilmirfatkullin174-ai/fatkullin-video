@@ -3,36 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>⛷️ Траты в Горах</title>
+    <title>🏔️ Траты в Горах</title>
     <style>
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', Roboto, Arial, sans-serif;
         }
         body {
-            background: #e2eaf6;
+            background: #d4e8ff;
             margin: 0;
             padding: 16px;
             padding-bottom: 30px;
+            position: relative;
+            min-height: 100vh;
+        }
+        body::before {
+            content: "❄️❄️❄️";
+            position: fixed;
+            top: 10px;
+            left: 0;
+            width: 100%;
+            font-size: 40px;
+            color: rgba(255, 255, 255, 0.3);
+            text-align: center;
+            pointer-events: none;
+            z-index: -1;
         }
         .container {
             max-width: 500px;
             margin: 0 auto;
+            position: relative;
         }
         h1 {
-            font-size: 2.3rem;
+            font-size: 2.2rem;
             text-align: center;
-            margin: 5px 0 10px;
-            color: #0f2c40;
-            text-shadow: 3px 3px 0 #9fc5f0;
+            margin: 5px 0 15px;
+            color: #0b2b44;
+            text-shadow: 3px 3px 0 #aac9ff;
         }
         .card {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(8px);
-            border-radius: 36px;
-            padding: 20px;
-            margin-bottom: 18px;
-            box-shadow: 0 12px 30px rgba(0, 30, 60, 0.2);
+            border-radius: 40px;
+            padding: 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 15px 30px rgba(0, 40, 80, 0.3);
             border: 2px solid white;
         }
         h2 {
@@ -47,37 +62,11 @@
         select, input, button {
             font-size: 18px;
             padding: 16px 20px;
-            border-radius: 40px;
-            border: 2px solid #cbd6e6;
+            border-radius: 50px;
+            border: 2px solid #c0d0e8;
             width: 100%;
             margin-bottom: 14px;
             background: white;
-        }
-        select {
-            appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="%23333" stroke-width="3"><polyline points="6 9 12 15 18 9"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            font-weight: 600;
-        }
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            gap: 8px;
-            margin-bottom: 18px;
-        }
-        .cat-btn {
-            background: #f0f5fd;
-            border: none;
-            padding: 14px 0;
-            border-radius: 50px;
-            font-size: 1.8rem;
-            border: 3px solid transparent;
-        }
-        .cat-btn.selected {
-            background: #1e88e5;
-            color: white;
-            border-color: #0d3b66;
         }
         .big-button {
             background: #10b981;
@@ -88,7 +77,6 @@
             border-radius: 60px;
             border: none;
             box-shadow: 0 7px 0 #0b7e5a;
-            transition: 0.05s;
         }
         .big-button:active {
             transform: translateY(5px);
@@ -97,34 +85,213 @@
         .add-participant {
             display: flex;
             gap: 10px;
+            margin-bottom: 10px;
         }
         .add-participant input {
             flex: 1;
             margin-bottom: 0;
-            padding: 16px;
         }
         .add-participant button {
-            width: auto;
+            width: 60px;
+            padding: 16px 0;
             background: #f97316;
             color: white;
             font-weight: bold;
-            padding: 16px 22px;
-            border-radius: 50px;
             border: none;
             box-shadow: 0 5px 0 #b45f0a;
-            white-space: nowrap;
-            margin-bottom: 0;
         }
+        .type-selector {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+        .type-btn {
+            background: #eef3fc;
+            border: 3px solid transparent;
+            padding: 12px 16px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            flex: 1 1 auto;
+        }
+        .type-btn.selected {
+            background: #3b82f6;
+            color: white;
+            border-color: #1e4b8f;
+        }
+        .participant-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 40px;
+            font-weight: 600;
+            margin: 4px;
+            border: 2px solid #a0c0e0;
+            background: white;
+        }
+        
+        /* ЛИПКОЕ ОКНО ПЛАТЕЛЬЩИКА */
+        .payer-card {
+            background: linear-gradient(145deg, #2563eb, #1e40af);
+            color: white;
+            padding: 14px 18px;
+            border-radius: 40px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            box-shadow: 0 5px 0 #1e3a8a;
+            border: 2px solid #93c5fd;
+            position: sticky;
+            top: 10px;
+            z-index: 100;
+        }
+        .payer-card span {
+            font-size: 24px;
+        }
+        
+        .category-section {
+            margin-bottom: 20px;
+        }
+        .category-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+        .cat-btn {
+            background: #eef3fc;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border: 3px solid transparent;
+            flex: 1 0 auto;
+        }
+        .cat-btn.selected {
+            background: #3b82f6;
+            color: white;
+            border-color: #1e4b8f;
+        }
+        .add-category {
+            display: flex;
+            gap: 8px;
+        }
+        .add-category input {
+            flex: 1;
+            margin-bottom: 0;
+            padding: 12px;
+        }
+        .add-category button {
+            width: 60px;
+            background: #8b5cf6;
+            color: white;
+            border: none;
+            padding: 12px 0;
+            border-radius: 50px;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #6d28d9;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            background: #e2eaf6;
+            border: none;
+            padding: 14px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border: 2px solid #b9d2f0;
+        }
+        .tab.active {
+            background: #3b82f6;
+            color: white;
+            border-color: #1e4b8f;
+        }
+        
+        .participants-checkbox {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #f0f7ff;
+            padding: 18px;
+            border-radius: 40px;
+            margin: 15px 0;
+            border: 2px solid #b9d2f0;
+        }
+        .participant-check-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 10px 16px;
+            border-radius: 40px;
+            border: 2px solid #b9d2f0;
+        }
+        .participant-check-item input {
+            width: 22px;
+            height: 22px;
+            margin: 0;
+        }
+        
+        .receipt-item {
+            background: #f0f7ff;
+            border-radius: 30px;
+            padding: 18px;
+            margin-bottom: 15px;
+            border: 2px solid #b9d2f0;
+        }
+        .receipt-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .receipt-header h4 {
+            margin: 0;
+            color: #1e3a8a;
+        }
+        .remove-item {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 8px 16px;
+            font-weight: bold;
+            box-shadow: 0 3px 0 #991b1b;
+        }
+        .add-item-btn {
+            background: #f97316;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 100%;
+            margin: 10px 0;
+            box-shadow: 0 5px 0 #c2410c;
+        }
+        
         .expense-full-list {
-            max-height: 270px;
+            max-height: 250px;
             overflow-y: auto;
         }
         .expense-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid #bdd3ec;
+            padding: 14px 0;
+            border-bottom: 2px solid #c1d4ec;
         }
         .expense-left {
             display: flex;
@@ -132,26 +299,21 @@
             gap: 10px;
             flex-wrap: wrap;
         }
-        .expense-cat {
-            font-size: 1.7rem;
-        }
         .expense-payer {
             background: #c1daf5;
-            padding: 4px 12px;
+            padding: 5px 14px;
             border-radius: 40px;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
-        .expense-date {
-            font-size: 13px;
-            color: #336699;
-            background: #eef4fa;
-            padding: 3px 8px;
+        .expense-badge {
+            font-size: 1.2rem;
+            background: white;
+            padding: 4px 10px;
             border-radius: 30px;
-        }
-        .expense-amount {
-            font-weight: 800;
-            font-size: 18px;
-            margin-right: 8px;
+            border: 2px solid #b9d2f0;
         }
         .delete-btn {
             background: none;
@@ -161,6 +323,7 @@
             font-weight: bold;
             cursor: pointer;
         }
+        
         .debt-item {
             background: #e8f2fe;
             border-radius: 28px;
@@ -183,19 +346,18 @@
         .empty-state {
             text-align: center;
             color: #6f8faf;
-            padding: 30px 0;
+            padding: 20px 0;
             font-style: italic;
         }
-
-        /* МОДАЛКА НА ВЕСЬ ЭКРАН */
+        
         .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(12px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -209,19 +371,14 @@
             opacity: 1;
         }
         .modal-content {
-            background: #fef9e8;
+            background: #fff7e6;
             width: 90%;
             max-width: 450px;
             border-radius: 70px;
             padding: 30px 20px;
             text-align: center;
-            box-shadow: 0 30px 60px black;
-            border: 5px solid #f7c35c;
-            transform: scale(0.9);
-            transition: 0.2s;
-        }
-        .modal-overlay.show .modal-content {
-            transform: scale(1);
+            box-shadow: 0 30px 50px black;
+            border: 5px solid #f7b731;
         }
         .modal-joke {
             font-size: 32px;
@@ -239,24 +396,19 @@
             color: white;
             font-size: 28px;
             font-weight: bold;
-            padding: 22px 20px;
+            padding: 22px;
             border-radius: 120px;
             width: 100%;
             box-shadow: 0 8px 0 #b0450c;
-            transition: 0.05s;
-        }
-        .modal-button:active {
-            transform: translateY(6px);
-            box-shadow: 0 2px 0 #b0450c;
         }
         .loading {
             text-align: center;
             padding: 20px;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
             color: #1f4a7a;
         }
     </style>
-    <!-- Подключаем Firebase SDK через CDN (для совместимости с вашим кодом) -->
+    <!-- Подключаем Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 </head>
@@ -265,33 +417,56 @@
 <div class="container">
     <h1>🏔️ ГОРЫ 2026</h1>
 
-    <!-- Добавление участников (пустой старт) -->
+    <!-- Добавление гонщиков -->
     <div class="card">
-        <h2>⛷️ Добавь гонщиков</h2>
-        <select id="payer"></select>
+        <h2>⛷️ Гонщики</h2>
         <div class="add-participant">
-            <input type="text" id="newParticipant" placeholder="Имя, напр. Колян">
+            <input type="text" id="newParticipant" placeholder="Имя (Дима, Саша...)">
             <button id="addParticipantBtn">➕</button>
         </div>
-    </div>
-
-    <!-- Ввод траты -->
-    <div class="card">
-        <h2>💸 Записать</h2>
-        <div class="category-grid">
-            <button class="cat-btn" data-cat="🍔">🍔</button>
-            <button class="cat-btn" data-cat="🍺">🍺</button>
-            <button class="cat-btn" data-cat="🏨">🏨</button>
-            <button class="cat-btn" data-cat="🏋️">🏋️</button>
-            <button class="cat-btn" data-cat="⛽">⛽</button>
-            <button class="cat-btn" data-cat="🚡">🚡</button>
+        <div class="type-selector">
+            <button class="type-btn selected" data-type="🏂">🏂 Сноуборд</button>
+            <button class="type-btn" data-type="⛷️">⛷️ Лыжи</button>
+            <button class="type-btn" data-type="🦚">🦚 Павлин</button>
         </div>
-        <input type="text" id="description" readonly value="🍔">
-        <input type="number" id="amount" placeholder="Сумма в рублях" step="1" min="0">
-        <button class="big-button" id="addExpense">ЗАПИСАТЬ</button>
+        <div id="participantsList" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
     </div>
 
-    <!-- Все траты (с датой) -->
+    <!-- Основная карточка -->
+    <div class="card">
+        <h2>💸 Новая трата</h2>
+        
+        <!-- ЛИПКОЕ окно плательщика -->
+        <div class="payer-card" id="currentPayerDisplay">
+            <span id="selectedPayerEmoji">👤</span>
+            <span id="selectedPayerName">Выбери кто платит</span>
+        </div>
+        
+        <select id="payer">
+            <option value="">Выбери кто платит</option>
+        </select>
+
+        <!-- Категории -->
+        <div class="category-section">
+            <div class="category-grid" id="categoryGrid"></div>
+            <div class="add-category">
+                <input type="text" id="newCategory" placeholder="Новая (🍔 Шашлык)">
+                <button id="addCategoryBtn">➕</button>
+            </div>
+        </div>
+
+        <!-- Вкладки -->
+        <div class="tabs">
+            <button class="tab active" id="tabAll">🍻 На всех</button>
+            <button class="tab" id="tabSelected">🎯 Кто участвует</button>
+            <button class="tab" id="tabReceipt">📝 Чек</button>
+        </div>
+
+        <div id="inputContainer"></div>
+        <button class="big-button" id="addExpense">🏔️ ЗАПИСАТЬ</button>
+    </div>
+
+    <!-- Все траты -->
     <div class="card">
         <h2>📋 Все траты</h2>
         <div id="fullExpenseList" class="expense-full-list"></div>
@@ -305,114 +480,90 @@
     </div>
 </div>
 
-<!-- МОДАЛКА НА ВЕСЬ ЭКРАН -->
+<!-- Модалка -->
 <div id="jokeModal" class="modal-overlay">
     <div class="modal-content">
-        <div class="modal-emoji">🏂❄️</div>
-        <div class="modal-joke" id="modalJokeText">Загрузка...</div>
+        <div class="modal-emoji" id="modalEmoji">🏂</div>
+        <div class="modal-joke" id="modalJokeText"></div>
         <button class="modal-button" id="modalGotItBtn">ПРОЧИТАНО 🔥</button>
     </div>
 </div>
 
 <script>
     // ===== НАСТРОЙКА FIREBASE =====
-    // Your web app's Firebase configuration
     const firebaseConfig = {
-      apiKey: "AIzaSyCLp2XyscnKwqUHIKrYuC6S40fRkFoHkoc",
-      authDomain: "cach-79d1c.firebaseapp.com",
-      projectId: "cach-79d1c",
-      storageBucket: "cach-79d1c.firebasestorage.app",
-      messagingSenderId: "487135929966",
-      appId: "1:487135929966:web:c6b5768640ea812bb7e87f"
+        apiKey: "AIzaSyCLp2XyscnKwqUHIKrYuC6S40fRkFoHkoc",
+        authDomain: "cach-79d1c.firebaseapp.com",
+        databaseURL: "https://cach-79d1c-default-rtdb.firebaseio.com",
+        projectId: "cach-79d1c",
+        storageBucket: "cach-79d1c.firebasestorage.app",
+        messagingSenderId: "487135929966",
+        appId: "1:487135929966:web:c6b5768640ea812bb7e87f"
     };
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // ===== Хранилище (теперь с Firebase) =====
+    // ===== ДАННЫЕ =====
     let expenses = [];
     let participants = [];
+    let categories = ['🍔 Еда', '🍺 Пиво', '🥛 Молоко', '🏨 Отель', '🏋️ Баня', '⛽ Бензин', '🚡 Скипасс'];
+    let selectedType = '🏂';
+    let currentTab = 'all';
+    let selectedCategory = '🍔 Еда';
+    let pendingDeleteIndex = null; // Для подтверждения удаления
 
-    // --- DOM элементы ---
+    // ЖЁСТКИЕ ПРИКОЛЫ
+    const jokes = [
+        { text: "ТЫ ЧЕ, БОГАЧ? ОПЯТЬ ДЕНЬГИ ПРОСИРАЕШЬ?", emoji: "🤡" },
+        { text: "ПИВО — ЭТО СВЯТОЕ, НО ТЫ УЖЕ ПОХОЖ НА БОЧКУ!", emoji: "🍺" },
+        { text: "МОЛОКО? ТЫ ЧЕ, МАЛЕНЬКИЙ? ИДИ ПИВО ПЕЙ!", emoji: "🥛😂" },
+        { text: "ПАВЛИН, ТЫ ЧЕ ТАКОЙ КРАСИВЫЙ? ДЕНЬГИ ТО ЕСТЬ?", emoji: "🦚" },
+        { text: "СНОУБОРДИСТЫ ВСЕГДА БЕЗ ДЕНЕГ, НУ ТЫ ПОНЯЛ", emoji: "🏂" },
+        { text: "ЛЫЖНИКИ ДУМАЮТ ЧТО ОНИ КРУТЫЕ, А ТЫ ПРОСТО ТРАТИШЬ", emoji: "⛷️" },
+        { text: "БАБКИ УЛЕТЕЛИ БЫСТРЕЕ ТЕБЯ С ГОРЫ, ЛОХ!", emoji: "💸" },
+        { text: "ТЫ СКОРО БУДЕШЬ ПРОДАТЬ ТРУСЫ НА ПОДЪЁМНИКЕ", emoji: "🩲" },
+        { text: "ЭТА ТРАТА БЫЛА ТЕБЕ НУЖНА КАК ПРОШЛОГОДНИЙ СНЕГ", emoji: "❄️" },
+        { text: "ТЫ ГДЕ ТАК МНОГО ДЕНЕГ ВЗЯЛ? ИЛИ ЭТО КРИДИТКА?", emoji: "💳" },
+        { text: "СКОРО БУДЕШЬ ЕСТЬ ОДНИ МАКАРОНЫ, ПОНТОРЕЗ", emoji: "🍝" },
+        { text: "ТВОИ ДЕНЬГИ ПЛАЧУТ КРОВАВЫМИ СЛЕЗАМИ", emoji: "😭" },
+        { text: "ЙЕТИ ОДОБРЯЕТ ТВОЮ ТРАТУ, НО ТЫ ВСЁ РАВНО ЛОХ", emoji: "🐻" },
+        { text: "ПАВЛИН, РАСПУСТИЛ ХВОСТ И ДЕНЬГИ РАСПУСТИЛ", emoji: "🦚" },
+        { text: "УВЕРЕН ЧТО ХОЧЕШЬ УДАЛИТЬ? А ЕСЛИ ПОДУМАТЬ?", emoji: "🤔" },
+        { text: "УДАЛИШЬ — БОЛЬШЕ НЕ ВЕРНЁШЬ, ЛОХ!", emoji: "🗑️" },
+        { text: "ТОЧНО? МОЖЕТ ЛУЧШЕ ОСТАВИМ?", emoji: "😬" },
+        { text: "А ЧЕ НА ВСЕХ НЕ ДЕЛИШЬ? ЖАДИНА?", emoji: "🦊" },
+        { text: "ОПЯТЬ ТОЛЬКО ДЛЯ ИЗБРАННЫХ? А МЫ?", emoji: "😢" },
+        { text: "НУ ТЫ И СОБИРАТЕЛЬ КОМПАНИИ!", emoji: "🧐" }
+    ];
+
+    // DOM элементы
     const payerSelect = document.getElementById('payer');
     const newParticipantInput = document.getElementById('newParticipant');
     const addParticipantBtn = document.getElementById('addParticipantBtn');
-    const catButtons = document.querySelectorAll('.cat-btn');
-    const descInput = document.getElementById('description');
-    const amountInput = document.getElementById('amount');
-    const addBtn = document.getElementById('addExpense');
+    const typeBtns = document.querySelectorAll('.type-btn');
+    const participantsListDiv = document.getElementById('participantsList');
+    const categoryGrid = document.getElementById('categoryGrid');
+    const newCategoryInput = document.getElementById('newCategory');
+    const addCategoryBtn = document.getElementById('addCategoryBtn');
+    const tabAll = document.getElementById('tabAll');
+    const tabSelected = document.getElementById('tabSelected');
+    const tabReceipt = document.getElementById('tabReceipt');
+    const inputContainer = document.getElementById('inputContainer');
+    const addExpenseBtn = document.getElementById('addExpense');
     const fullListDiv = document.getElementById('fullExpenseList');
     const debtsDiv = document.getElementById('debtsList');
     const totalSpan = document.getElementById('totalSpent');
+    const selectedPayerEmoji = document.getElementById('selectedPayerEmoji');
+    const selectedPayerName = document.getElementById('selectedPayerName');
+    
     const modalOverlay = document.getElementById('jokeModal');
     const modalJokeText = document.getElementById('modalJokeText');
+    const modalEmoji = document.getElementById('modalEmoji');
     const modalGotItBtn = document.getElementById('modalGotItBtn');
 
-    // --- Приколы (полный экран) ---
-    const jokes = [
-        "ЛОХ! ОПЯТЬ ТРАТИШЬ?",
-        "СКИПАСС САМ НЕ КУПИТСЯ!",
-        "ДЕНЬГИ УЛЕТЕЛИ БЫСТРЕЕ ТЕБЯ С ГОРЫ!",
-        "ТЫ ЧЕ, ТАМ ШАМПАНСКОЕ РАЗЛИВАЮТ?",
-        "КОШЕЛЁК ПЛАЧЕТ ГОРЮЧИМИ СЛЕЗАМИ",
-        "ЭЙ, ШУМАХЕР, ПРИТОРМОЗИ!",
-        "ЭТО БЫЛИ ПОСЛЕДНИЕ НА БУТЕРБРОДЫ?",
-        "СЕГОДНЯ ТЫ ГЕРОЙ, ЗАВТРА — БОМЖ НА СКЛОНЕ",
-        "КРЕДИТКА ДЫМИТ, КАК ТВОИ ТОРМОЗА!",
-        "БАБКИ РАСТАЯЛИ БЫСТРЕЕ СНЕГА ВЕСНОЙ",
-        "ТРАТИТЬ — ТВОЁ ГОРНОЛЫЖНОЕ АМПЛУА",
-        "МЕГАРАСХОД! ТАК И ДО ДОЛГОВОЙ ЯМЫ",
-        "ТЫ СЛУЧАЙНО НЕ ОЛИГАРХ?",
-        "ОП, И СНОВА МИНУС НА КАРТЕ",
-        "ДЕНЬГИ ЛЮБЯТ СЧЁТ, А ТЫ ИХ ТРАТИШЬ",
-        "ПОДУМАЙ О ЗАВТРАШНЕМ ДНЕ... ХА-ХА",
-        "БЮДЖЕТ ТРЕЩИТ ПО ШВАМ!",
-        "НУ ТЫ И МОТ! ВСЁ НА КАФЕ?",
-        "СКОРО ПРОДАВАТЬ ЛЫЖИ ПРИДЁТСЯ",
-        "ЭКОНОМЬ, СУПЕРСТАР!"
-    ];
-
-    // --- Модалка: показать на весь экран ---
-    function showFullscreenJoke(payerName = '', amount = 0) {
-        let randomIndex = Math.floor(Math.random() * jokes.length);
-        let joke = jokes[randomIndex];
-        if (payerName && Math.random() > 0.4) {
-            joke = payerName + '! ' + joke;
-        }
-        if (amount > 7000 && Math.random() > 0.5) {
-            joke = joke + '  ЦЕЛЫХ ' + amount + ' РУБ.';
-        }
-        modalJokeText.innerText = joke;
-        modalOverlay.classList.add('show');
-    }
-
-    // --- Закрыть модалку (только по кнопке) ---
-    modalGotItBtn.addEventListener('click', function() {
-        modalOverlay.classList.remove('show');
-    });
-
-    // --- Выбор категории ---
-    catButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            catButtons.forEach(b => b.classList.remove('selected'));
-            this.classList.add('selected');
-            descInput.value = this.dataset.cat;
-        });
-    });
-    catButtons[0]?.classList.add('selected');
-    descInput.value = '🍔';
-
-    // --- Обновление списка участников в select ---
-    function updateParticipantsSelect() {
-        let html = '';
-        participants.forEach(p => {
-            html += `<option value="${p}">${p}</option>`;
-        });
-        payerSelect.innerHTML = html;
-    }
-
-    // --- Загрузка данных из Firebase ---
+    // ===== ФУНКЦИИ FIREBASE =====
     function loadFromFirebase() {
         const dbRef = database.ref('gory2026');
         dbRef.on('value', (snapshot) => {
@@ -420,166 +571,442 @@
             if (data) {
                 participants = data.participants || [];
                 expenses = data.expenses || [];
+                categories = data.categories || ['🍔 Еда', '🍺 Пиво', '🥛 Молоко', '🏨 Отель', '🏋️ Баня', '⛽ Бензин', '🚡 Скипасс'];
             } else {
                 participants = [];
                 expenses = [];
             }
-            updateParticipantsSelect();
+            updateUI();
+            renderCategories();
             renderFullList();
             renderDebts();
         });
     }
 
-    // --- Сохранение данных в Firebase ---
     function saveToFirebase() {
         database.ref('gory2026').set({
             participants: participants,
-            expenses: expenses
+            expenses: expenses,
+            categories: categories
         });
     }
 
-    // --- Добавление участника ---
-    addParticipantBtn.addEventListener('click', function() {
-        const newName = newParticipantInput.value.trim();
-        if (newName === '') {
-            modalJokeText.innerText = 'ИМЯ ВВЕДИ, ЙЕТИ!';
-            modalOverlay.classList.add('show');
-            return;
+    // ===== ОСНОВНЫЕ ФУНКЦИИ =====
+    function showJoke(text = null, emoji = null) {
+        if (text) {
+            modalJokeText.innerText = text;
+            modalEmoji.innerText = emoji || '🎲';
+        } else {
+            const joke = jokes[Math.floor(Math.random() * jokes.length)];
+            modalJokeText.innerText = joke.text;
+            modalEmoji.innerText = joke.emoji;
         }
-        if (participants.includes(newName)) {
-            modalJokeText.innerText = 'ТАКОЙ УЖЕ ЕСТЬ, ГОЛОВА!';
-            modalOverlay.classList.add('show');
-            return;
-        }
-        participants.push(newName);
-        updateParticipantsSelect();
-        newParticipantInput.value = '';
-        renderFullList();
-        renderDebts();
-        saveToFirebase(); // Сохраняем в Firebase
-        
-        modalJokeText.innerText = `🏆 ${newName} В СОСТАВЕ! ПОГНАЛИ!`;
         modalOverlay.classList.add('show');
+    }
+
+    modalGotItBtn.addEventListener('click', () => {
+        modalOverlay.classList.remove('show');
+        if (pendingDeleteIndex !== null) {
+            expenses.splice(pendingDeleteIndex, 1);
+            pendingDeleteIndex = null;
+            renderFullList();
+            renderDebts();
+            saveToFirebase();
+            showJoke('🗑️ НУ ВСЁ, УДАЛИЛ! ДОВОЛЕН?', '😏');
+        }
     });
 
-    // --- Добавить расход ---
-    addBtn.addEventListener('click', function() {
+    typeBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            typeBtns.forEach(b => b.classList.remove('selected'));
+            this.classList.add('selected');
+            selectedType = this.dataset.type;
+        });
+    });
+
+    function renderCategories() {
+        let html = '';
+        categories.forEach(cat => {
+            html += `<button class="cat-btn ${cat === selectedCategory ? 'selected' : ''}" data-cat="${cat}">${cat}</button>`;
+        });
+        categoryGrid.innerHTML = html;
+        
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('selected'));
+                this.classList.add('selected');
+                selectedCategory = this.dataset.cat;
+            });
+        });
+    }
+
+    addCategoryBtn.addEventListener('click', function() {
+        const cat = newCategoryInput.value.trim();
+        if (!cat) {
+            showJoke('НАПИШИ КАТЕГОРИЮ!', '📝');
+            return;
+        }
+        categories.push(cat);
+        newCategoryInput.value = '';
+        renderCategories();
+        saveToFirebase();
+        showJoke(`➕ НОВАЯ КАТЕГОРИЯ: ${cat}`, '🏷️');
+    });
+
+    function updateUI() {
+        let selectHtml = '<option value="">Выбери кто платит</option>';
+        participants.forEach(p => {
+            selectHtml += `<option value="${p.name}">${p.type} ${p.name}</option>`;
+        });
+        payerSelect.innerHTML = selectHtml;
+        
+        let listHtml = '';
+        participants.forEach(p => {
+            listHtml += `<span class="participant-badge">${p.type} ${p.name}</span>`;
+        });
+        participantsListDiv.innerHTML = listHtml;
+        
+        updatePayerDisplay();
+        renderTabContent();
+    }
+
+    function updatePayerDisplay() {
+        const selected = payerSelect.value;
+        if (selected) {
+            const p = participants.find(p => p.name === selected);
+            if (p) {
+                selectedPayerEmoji.innerText = p.type;
+                selectedPayerName.innerText = p.name;
+            } else {
+                selectedPayerEmoji.innerText = '👤';
+                selectedPayerName.innerText = selected;
+            }
+        } else {
+            selectedPayerEmoji.innerText = '👤';
+            selectedPayerName.innerText = 'Выбери кто платит';
+        }
+    }
+
+    payerSelect.addEventListener('change', updatePayerDisplay);
+
+    addParticipantBtn.addEventListener('click', function() {
+        const name = newParticipantInput.value.trim();
+        if (!name) {
+            showJoke('ИМЯ ВВЕДИ!', '😤');
+            return;
+        }
+        if (participants.some(p => p.name === name)) {
+            showJoke('ТАКОЙ УЖЕ ЕСТЬ!', '🤦');
+            return;
+        }
+        participants.push({ name, type: selectedType });
+        newParticipantInput.value = '';
+        updateUI();
+        saveToFirebase();
+        showJoke(`🏔️ ${selectedType} ${name} В СОСТАВЕ!`, selectedType);
+    });
+
+    tabAll.addEventListener('click', () => {
+        currentTab = 'all';
+        tabAll.classList.add('active');
+        tabSelected.classList.remove('active');
+        tabReceipt.classList.remove('active');
+        renderTabContent();
+    });
+
+    tabSelected.addEventListener('click', () => {
+        currentTab = 'selected';
+        tabSelected.classList.add('active');
+        tabAll.classList.remove('active');
+        tabReceipt.classList.remove('active');
+        renderTabContent();
+    });
+
+    tabReceipt.addEventListener('click', () => {
+        currentTab = 'receipt';
+        tabReceipt.classList.add('active');
+        tabAll.classList.remove('active');
+        tabSelected.classList.remove('active');
+        renderTabContent();
+    });
+
+    function renderTabContent() {
         if (participants.length === 0) {
-            modalJokeText.innerText = 'СНАЧАЛА ГОСТЕЙ ДОБАВЬ!';
-            modalOverlay.classList.add('show');
+            inputContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">Сначала добавь гонщиков</div>';
             return;
         }
+
+        if (currentTab === 'all') {
+            inputContainer.innerHTML = `
+                <div style="margin: 15px 0;">
+                    <input type="number" id="allAmount" placeholder="Сумма в рублях" min="0" step="1" style="font-size: 20px; padding: 18px;">
+                </div>
+            `;
+        } 
+        else if (currentTab === 'selected') {
+            let checkboxes = '';
+            participants.forEach(p => {
+                checkboxes += `
+                    <label class="participant-check-item">
+                        <input type="checkbox" class="selected-checkbox" value="${p.name}" checked> ${p.type} ${p.name}
+                    </label>
+                `;
+            });
+            
+            inputContainer.innerHTML = `
+                <div style="font-weight: bold; margin: 10px 0;">👥 Кто участвует:</div>
+                <div class="participants-checkbox">${checkboxes}</div>
+                <input type="number" id="selectedAmount" placeholder="Сумма в рублях" min="0" step="1" style="font-size: 20px; padding: 18px;">
+            `;
+        } 
+        else if (currentTab === 'receipt') {
+            inputContainer.innerHTML = `
+                <div id="receiptItems"></div>
+                <button class="add-item-btn" id="addReceiptItemBtn">➕ Добавить позицию</button>
+            `;
+            
+            const receiptItems = document.getElementById('receiptItems');
+            if (receiptItems.children.length === 0) {
+                addReceiptItem();
+            }
+            
+            document.getElementById('addReceiptItemBtn').addEventListener('click', addReceiptItem);
+        }
+    }
+
+    function addReceiptItem() {
+        const receiptItems = document.getElementById('receiptItems');
+        const id = Date.now() + Math.random();
+        
+        let checkboxes = '';
+        participants.forEach(p => {
+            checkboxes += `
+                <label class="participant-check-item">
+                    <input type="checkbox" class="receipt-consumer" value="${p.name}" checked> ${p.type} ${p.name}
+                </label>
+            `;
+        });
+        
+        const html = `
+            <div class="receipt-item" data-id="${id}">
+                <div class="receipt-header">
+                    <h4>🍽️ Позиция</h4>
+                    <button class="remove-item" onclick="this.closest('.receipt-item').remove()">✕ Удалить</button>
+                </div>
+                <select class="receipt-category" style="margin-bottom: 10px;">
+                    ${categories.map(c => `<option value="${c}">${c}</option>`).join('')}
+                </select>
+                <input type="number" class="receipt-amount" placeholder="Сумма" min="0" step="1" style="margin-bottom: 10px;">
+                <div style="font-weight: bold; margin: 5px 0;">👥 Кто это потреблял:</div>
+                <div class="participants-checkbox">${checkboxes}</div>
+            </div>
+        `;
+        
+        receiptItems.insertAdjacentHTML('beforeend', html);
+    }
+
+    addExpenseBtn.addEventListener('click', function() {
         const payer = payerSelect.value;
-        const description = descInput.value;
-        const amount = parseFloat(amountInput.value);
-
         if (!payer) {
-            modalJokeText.innerText = 'ВЫБЕРИ, КТО ПЛАТИТ!';
-            modalOverlay.classList.add('show');
-            return;
-        }
-        if (isNaN(amount) || amount <= 0) {
-            modalJokeText.innerText = 'СУММУ НОРМАЛЬНУЮ ВПИШИ!';
-            modalOverlay.classList.add('show');
+            showJoke('ВЫБЕРИ, КТО ПЛАТИТ!', '👤');
             return;
         }
 
-        // Дата и время
+        if (currentTab === 'all') {
+            const amount = parseFloat(document.getElementById('allAmount')?.value);
+            if (!amount || amount <= 0) {
+                showJoke('ВВЕДИ СУММУ!', '💰');
+                return;
+            }
+            
+            saveExpense(payer, [{
+                category: selectedCategory,
+                amount: amount,
+                consumers: participants.map(p => p.name)
+            }], amount, 'all');
+        }
+        else if (currentTab === 'selected') {
+            const amount = parseFloat(document.getElementById('selectedAmount')?.value);
+            if (!amount || amount <= 0) {
+                showJoke('ВВЕДИ СУММУ!', '💰');
+                return;
+            }
+            
+            const consumers = [];
+            document.querySelectorAll('.selected-checkbox:checked').forEach(cb => {
+                consumers.push(cb.value);
+            });
+            
+            if (consumers.length === 0) {
+                showJoke('ВЫБЕРИ, КТО УЧАСТВУЕТ!', '👥');
+                return;
+            }
+            
+            // Шутка если выбраны не все
+            if (consumers.length < participants.length) {
+                const jokes = [
+                    'А ЧЕ НА ВСЕХ НЕ ДЕЛИШЬ? ЖАДИНА?',
+                    'ОПЯТЬ ТОЛЬКО ДЛЯ ИЗБРАННЫХ?',
+                    'НУ ТЫ И СОБИРАТЕЛЬ КОМПАНИИ!'
+                ];
+                showJoke(jokes[Math.floor(Math.random() * jokes.length)], '🦊');
+            }
+            
+            saveExpense(payer, [{
+                category: selectedCategory,
+                amount: amount,
+                consumers: consumers
+            }], amount, 'selected');
+        }
+        else if (currentTab === 'receipt') {
+            const items = document.querySelectorAll('.receipt-item');
+            if (items.length === 0) {
+                showJoke('ДОБАВЬ ХОТЬ ОДНУ ПОЗИЦИЮ!', '🍽️');
+                return;
+            }
+            
+            let total = 0;
+            const receiptItems = [];
+            
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const category = item.querySelector('.receipt-category').value;
+                const amount = parseFloat(item.querySelector('.receipt-amount').value);
+                
+                if (!amount || amount <= 0) {
+                    showJoke(`В ПОЗИЦИИ ${i+1} СУММА КРИВАЯ!`, '💰');
+                    return;
+                }
+                
+                const consumers = [];
+                item.querySelectorAll('.receipt-consumer:checked').forEach(cb => {
+                    consumers.push(cb.value);
+                });
+                
+                if (consumers.length === 0) {
+                    showJoke(`В ПОЗИЦИИ ${i+1} ВЫБЕРИ ПОТРЕБИТЕЛЕЙ!`, '👥');
+                    return;
+                }
+                
+                receiptItems.push({ category, amount, consumers });
+                total += amount;
+            }
+            
+            saveExpense(payer, receiptItems, total, 'receipt');
+        }
+    });
+
+    function saveExpense(payer, items, total, type) {
         const now = new Date();
         const dateStr = now.toLocaleDateString('ru-RU', { day: 'numeric', month: 'numeric' });
         const timeStr = now.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
 
         expenses.push({
-            payer: payer,
-            desc: description,
-            amount: amount,
+            payer,
+            items,
+            total,
+            type,
             date: dateStr,
             time: timeStr,
             timestamp: now.getTime()
         });
 
-        amountInput.value = '';
+        if (currentTab === 'all') {
+            document.getElementById('allAmount').value = '';
+        } else if (currentTab === 'selected') {
+            document.getElementById('selectedAmount').value = '';
+        } else if (currentTab === 'receipt') {
+            document.getElementById('receiptItems').innerHTML = '';
+            addReceiptItem();
+        }
+
         renderFullList();
         renderDebts();
-        saveToFirebase(); // Сохраняем в Firebase
-        showFullscreenJoke(payer, amount);
-    });
-
-    // --- Удаление расхода ---
-    function deleteExpense(index) {
-        const deleted = expenses[index];
-        if (deleted) {
-            expenses.splice(index, 1);
-            renderFullList();
-            renderDebts();
-            saveToFirebase(); // Сохраняем в Firebase
-            modalJokeText.innerText = `❌ ТРАТА ${deleted.desc} УДАЛЕНА! МОЛОДЕЦ!`;
-            modalOverlay.classList.add('show');
-        }
+        saveToFirebase();
+        showJoke();
     }
 
-    // --- Полный список трат (с датой и временем) ---
+    function deleteExpense(index) {
+        pendingDeleteIndex = index;
+        const deleteJokes = [
+            'УВЕРЕН ЧТО ХОЧЕШЬ УДАЛИТЬ? А ЕСЛИ ПОДУМАТЬ?',
+            'УДАЛИШЬ — БОЛЬШЕ НЕ ВЕРНЁШЬ, ЛОХ!',
+            'ТОЧНО? МОЖЕТ ЛУЧШЕ ОСТАВИМ?',
+            'ЭТУ ТРАТУ ЖАЛКО, НО ДЕЛО ТВОЁ',
+            'ПОДТВЕРДИ УДАЛЕНИЕ, ЕСЛИ НЕ ТРУС'
+        ];
+        showJoke(deleteJokes[Math.floor(Math.random() * deleteJokes.length)], '🗑️');
+    }
+
     function renderFullList() {
         if (expenses.length === 0) {
-            fullListDiv.innerHTML = '<div class="empty-state">⛷️ ПОКА НИЧЕГО НЕ ПОТРАЧЕНО</div>';
+            fullListDiv.innerHTML = '<div class="empty-state">⛷️ ПОКА НИЧЕГО НЕТ</div>';
             return;
         }
+        
         let html = '';
         [...expenses].reverse().forEach((exp, revIndex) => {
             const originalIndex = expenses.length - 1 - revIndex;
+            
+            let typeEmoji = '🍻';
+            if (exp.type === 'selected') typeEmoji = '🎯';
+            if (exp.type === 'receipt') typeEmoji = '📝';
+            
+            const payerData = participants.find(p => p.name === exp.payer);
+            const payerType = payerData ? payerData.type : '👤';
+            
             html += `
                 <div class="expense-item">
                     <div class="expense-left">
-                        <span class="expense-cat">${exp.desc}</span>
-                        <span class="expense-payer">${exp.payer}</span>
-                        <span class="expense-date">${exp.date || '?'} ${exp.time || ''}</span>
+                        <span class="expense-badge">${typeEmoji}</span>
+                        <span class="expense-payer">${payerType} ${exp.payer}</span>
+                        <span>${exp.items.length} поз.</span>
+                        <span>${exp.date}</span>
                     </div>
                     <div style="display: flex; align-items: center;">
-                        <span class="expense-amount">${exp.amount} ₽</span>
-                        <button class="delete-btn" data-index="${originalIndex}">✕</button>
+                        <span style="font-weight: 800; margin-right: 10px;">${exp.total} ₽</span>
+                        <button class="delete-btn" onclick="deleteExpense(${originalIndex})">✕</button>
                     </div>
                 </div>
             `;
         });
+        
         fullListDiv.innerHTML = html;
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const index = e.target.dataset.index;
-                if (index !== undefined) deleteExpense(parseInt(index));
-            });
-        });
     }
 
-    // --- Расчет долгов ---
     function renderDebts() {
         if (expenses.length === 0 || participants.length === 0) {
-            debtsDiv.innerHTML = '<div class="empty-state">⛷️ ДОБАВЬ ЛЮДЕЙ И ТРАТЫ</div>';
+            debtsDiv.innerHTML = '<div class="empty-state">⛷️ ДОБАВЬ ТРАТЫ</div>';
             totalSpan.innerHTML = '0 ₽';
             return;
         }
 
-        let spent = {};
-        participants.forEach(p => spent[p] = 0);
-        let total = 0;
+        let balance = {};
+        participants.forEach(p => balance[p.name] = 0);
+
         expenses.forEach(exp => {
-            if (spent.hasOwnProperty(exp.payer)) {
-                spent[exp.payer] += exp.amount;
-                total += exp.amount;
-            }
+            const payer = exp.payer;
+            balance[payer] += exp.total;
+            
+            exp.items.forEach(item => {
+                const share = item.amount / item.consumers.length;
+                item.consumers.forEach(consumer => {
+                    balance[consumer] -= share;
+                });
+            });
         });
 
-        const average = total / participants.length;
-        let balance = {};
         participants.forEach(p => {
-            balance[p] = spent[p] - average;
+            balance[p.name] = Math.round(balance[p.name] * 100) / 100;
         });
 
         let debtors = [];
         let creditors = [];
+
         participants.forEach(p => {
-            const bal = Math.round(balance[p] * 100) / 100;
-            if (bal < -0.01) debtors.push({ name: p, amount: -bal });
-            else if (bal > 0.01) creditors.push({ name: p, amount: bal });
+            const bal = balance[p.name];
+            if (bal < -0.01) debtors.push({ name: p.name, amount: -bal });
+            else if (bal > 0.01) creditors.push({ name: p.name, amount: bal });
         });
 
         let transactions = [];
@@ -594,7 +1021,7 @@
             amount = Math.round(amount * 100) / 100;
 
             if (amount > 0.01) {
-                transactions.push({ from: debtor.name, to: creditor.name, amount: amount });
+                transactions.push({ from: debtor.name, to: creditor.name, amount });
             }
 
             debtor.amount -= amount;
@@ -619,11 +1046,16 @@
             debtsDiv.innerHTML = html;
         }
 
+        const total = expenses.reduce((sum, exp) => sum + exp.total, 0);
         totalSpan.innerHTML = `💰 ВСЕГО: ${total} ₽`;
     }
 
-    // --- Загружаем данные при старте ---
+    // Инициализация
+    window.deleteExpense = deleteExpense;
+    
+    // Загружаем данные из Firebase
     loadFromFirebase();
+    renderCategories();
 </script>
 </body>
 </html>
